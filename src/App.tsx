@@ -759,6 +759,8 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
   const [newTask, setNewTask] = useState({ titulo:"",responsavel:"Ivanise",prioridade:"Alta",status:"nao_iniciado",observacao:"" });
   const [newContact, setNewContact] = useState({ date:TODAY.toISOString().slice(0,10),tipo:"WhatsApp",responsavel:"Ivanise",resumo:"",docLink:"",gravacaoLink:"" });
   const [localUnit, setLocalUnit] = useState(unit);
+  const [contactError, setContactError] = useState("");
+  const [taskError, setTaskError] = useState("");
 
   const cfg = GROUP_CFG[localUnit.group];
   const openTasks = (localUnit.tasks||[]).filter(t=>t.status!=="concluido"&&t.status!=="cancelado");
@@ -778,10 +780,11 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
   }
 
   function addTask() {
-    if(!newTask.titulo.trim()) return;
+    if(!newTask.titulo.trim()) { setTaskError("Preencha o título da tarefa."); return; }
+    setTaskError("");
     updateLocal({
       tasks:[...(localUnit.tasks||[]),{
-        ...newTask, id:`manual_${Date.now()}`,
+        ...newTask, id: genUUID(),
         meetingId:null, meetingData:TODAY.toISOString().slice(0,10),
       }]
     });
@@ -790,10 +793,12 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
   }
 
   function addContact() {
-    if(!newContact.resumo.trim()) return;
+    if(!newContact.resumo.trim()) { setContactError("Preencha o resumo do contato."); return; }
+    setContactError("");
+    const newEntry = { ...newContact, id: genUUID() };
     const updated = {
       ...localUnit,
-      contacts:[{...newContact,id:`c_${Date.now()}`,...(localUnit.contacts||[])?.slice(-99)},...(localUnit.contacts||[])],
+      contacts: [newEntry, ...(localUnit.contacts||[])],
       lastContactDate: newContact.date,
       lastContactType: newContact.tipo,
     };
@@ -868,8 +873,8 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
 
           {/* Actions */}
           <div style={{display:"flex",gap:8,marginBottom:10}}>
-            <button onClick={()=>setShowNewContact(true)} style={btnSt(C.laranja)}>+ Registrar contato</button>
-            <button onClick={()=>setShowNewTask(true)} style={{...btnSt(C.inset,C.textPrimary),border:`1px solid ${C.cardBorder}`}}>+ Nova tarefa</button>
+            <button onClick={()=>{setShowNewContact(true); setTab("contacts");}} style={btnSt(C.laranja)}>+ Registrar contato</button>
+            <button onClick={()=>{setShowNewTask(true); setTab("tasks");}} style={{...btnSt(C.inset,C.textPrimary),border:`1px solid ${C.cardBorder}`}}>+ Nova tarefa</button>
             {localUnit.whatsapp&&(
               <a href={`https://wa.me/55${localUnit.whatsapp.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer"
                 style={{...btnSt("#25D36622","#25D366"),border:"1px solid #25D36644",textDecoration:"none"}}>
@@ -1000,9 +1005,10 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
                       {Object.entries(STATUS_TASK).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
                     </select>
                   </div>
+                  {taskError&&<div style={{fontSize:11,color:C.red,marginBottom:8}}>⚠️ {taskError}</div>}
                   <div style={{display:"flex",gap:8}}>
                     <button onClick={addTask} style={btnSt(C.azul)}>Criar</button>
-                    <button onClick={()=>setShowNewTask(false)} style={btnSt("transparent",C.textMuted)}>Cancelar</button>
+                    <button onClick={()=>{setShowNewTask(false);setTaskError("");}} style={btnSt("transparent",C.textMuted)}>Cancelar</button>
                   </div>
                 </div>
               )}
@@ -1063,9 +1069,10 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
                     <input value={newContact.docLink} onChange={e=>setNewContact({...newContact,docLink:e.target.value})} placeholder="Link da ata (opcional)" style={inputSt} />
                     <input value={newContact.gravacaoLink} onChange={e=>setNewContact({...newContact,gravacaoLink:e.target.value})} placeholder="Link da gravação (opcional)" style={inputSt} />
                   </div>
+                  {contactError&&<div style={{fontSize:11,color:C.red,marginBottom:8}}>⚠️ {contactError}</div>}
                   <div style={{display:"flex",gap:8}}>
                     <button onClick={addContact} style={btnSt(C.laranja)}>Salvar</button>
-                    <button onClick={()=>setShowNewContact(false)} style={btnSt("transparent",C.textMuted)}>Cancelar</button>
+                    <button onClick={()=>{setShowNewContact(false);setContactError("");}} style={btnSt("transparent",C.textMuted)}>Cancelar</button>
                   </div>
                 </div>
               )}
