@@ -753,7 +753,7 @@ function TaskRow({ task, onUpdate, compact }) {
 
 // ─── UNIT DETAIL PANEL ────────────────────────────────────────
 function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
-  const [tab, setTab] = useState("overview");
+  const [tab, setTab] = useState("diagnostico");
   const [showNewTask, setShowNewTask] = useState(false);
   const [showNewContact, setShowNewContact] = useState(false);
   const [newTask, setNewTask] = useState({ titulo:"",responsavel:"Ivanise",prioridade:"Alta",status:"nao_iniciado",observacao:"" });
@@ -761,6 +761,35 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
   const [localUnit, setLocalUnit] = useState(unit);
   const [contactError, setContactError] = useState("");
   const [taskError, setTaskError] = useState("");
+  const [diag, setDiag] = useState({
+    diagnostico_texto:"", fat_semana:"", projecao_mes:"", correcao_projetada:"",
+    ig_feed_dias:"", ig_reels_dias:"", ig_stories_ativo:false, ig_trafego_pago:false,
+    ig_campanhas_ativas:false, ig_participacao_campanhas:false,
+    comercial_novos:"", comercial_renovacoes:"", comercial_leads:"",
+    comercial_atend_fds:"", comercial_dificuldade:"",
+    check_ig_verificado:false, check_wpp_enviado:false,
+    check_form_preenchido:false, check_reuniao_realizada:false,
+    proxima_reuniao:"", link_meet:"",
+  });
+  const [diagLoaded, setDiagLoaded] = useState(false);
+
+  useEffect(()=>{
+    if(diagLoaded) return;
+    sb.get("unit_diagnostico",`?unit_id=eq.${unit.id}&select=*`).then(rows=>{
+      if(rows&&rows[0]) setDiag(prev=>({...prev,...rows[0]}));
+    }).catch(()=>{}).finally(()=>setDiagLoaded(true));
+  },[unit.id]);
+
+  function saveDiag(updates) {
+    const next = {...diag,...updates};
+    setDiag(next);
+    sb.upsert("unit_diagnostico",{...next,unit_id:unit.id},"unit_id").catch(()=>{});
+  }
+
+  const unitMeetings = useMemo(()=>
+    (allMeetings||[]).filter(m=>m.unidade===unit.name||(m.extra||[]).includes(unit.name))
+      .sort((a,b)=>b.data.localeCompare(a.data))
+  ,[allMeetings,unit.name]);
 
   const cfg = GROUP_CFG[localUnit.group];
   const openTasks = (localUnit.tasks||[]).filter(t=>t.status!=="concluido"&&t.status!=="cancelado");
@@ -809,7 +838,7 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
   }
 
   const TABS = [
-    {id:"overview",label:"Visão Geral"},
+    {id:"diagnostico",label:"Diagnóstico"},
     {id:"tasks",label:`Tarefas (${openTasks.length}${overdueTasks.length>0?` ⚠️${overdueTasks.length}`:""})`},
     {id:"kanban",label:"Kanban"},
     {id:"contacts",label:`Contatos (${(localUnit.contacts||[]).length})`},
@@ -900,64 +929,13 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
         {/* Tab content */}
         <div style={{padding:"14px 14px",flex:1}}>
 
-          {/* OVERVIEW */}
-          {tab==="overview" && (
+          {/* DIAGNÓSTICO */}
+          {tab==="diagnostico" && (
             <div style={{display:"flex",flexDirection:"column",gap:14}}>
-              {/* Progress */}
+
+              {/* 1. Contato e responsável */}
               <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
-                <div style={{fontSize:11,color:C.textMuted,marginBottom:6}}>Progresso — Meta Jun/26</div>
-                <ProgressBar pct={localUnit.metaProgress} height={6} />
-                <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
-                  <span style={{fontSize:10,color:C.textMuted}}>Maio: {fmtBRL(localUnit.fatMai)}</span>
-                  <span style={{fontSize:10,color:localUnit.metaProgress>=100?C.verde:C.laranja,fontWeight:700}}>{localUnit.metaProgress}%</span>
-                  <span style={{fontSize:10,color:C.textMuted}}>Meta: {fmtBRL(localUnit.metaJun)}</span>
-                </div>
-              </div>
-
-              {/* Trimester */}
-              <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
-                <div style={{fontSize:11,color:C.textMuted,marginBottom:8}}>Histórico trimestral</div>
-                <div style={{display:"flex",gap:8}}>
-                  {[["Mar/26",localUnit.fatMar],["Abr/26",localUnit.fatAbr],["Mai/26",localUnit.fatMai]].map(([l,v])=>(
-                    <div key={l} style={{flex:1,textAlign:"center"}}>
-                      <div style={{fontSize:13,fontWeight:700,color:C.textPrimary}}>{fmtBRL(v)}</div>
-                      <div style={{fontSize:10,color:C.textMuted,marginTop:2}}>{l}</div>
-                      <div style={{marginTop:4}}><ProgressBar pct={localUnit.metaJun>0?(v/localUnit.metaJun)*100:0} color={C.azul} /></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* ROI */}
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
-                {[
-                  {label:"Investimento",value:fmtBRL(localUnit.investment),color:C.textMuted},
-                  {label:"ROI acumulado est.",value:`${localUnit.roiAccum}%`,color:localUnit.roiAccum>=100?C.verde:C.laranja},
-                  {label:"Meses p/ payback",value:localUnit.paybackLeft!==null?`~${localUnit.paybackLeft}m`:"—",color:C.azul},
-                ].map(s=>(
-                  <div key={s.label} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"10px 12px"}}>
-                    <div style={{fontSize:10,color:C.textMuted,marginBottom:3}}>{s.label}</div>
-                    <div style={{fontSize:15,fontWeight:700,color:s.color}}>{s.value}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Pending tasks preview */}
-              {openTasks.length>0&&(
-                <div style={{background:C.card,border:`1px solid ${overdueTasks.length>0?"#ef444433":C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
-                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-                    <div style={{fontSize:11,color:C.textMuted}}>Tarefas em aberto ({openTasks.length}){overdueTasks.length>0&&<span style={{color:C.red}}> · {overdueTasks.length} vencidas</span>}</div>
-                    <button onClick={()=>setTab("tasks")} style={{background:"none",border:"none",color:C.azul,fontSize:11,cursor:"pointer"}}>Ver todas →</button>
-                  </div>
-                  {openTasks.slice(0,4).map(t=>(
-                    <TaskRow key={t.id} task={t} onUpdate={updateTask} compact />
-                  ))}
-                </div>
-              )}
-
-              {/* Contact info */}
-              <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
-                <div style={{fontSize:11,color:C.textMuted,marginBottom:10}}>Contato e responsável</div>
+                <div style={{fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>Contato e responsável</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
                   <div>
                     <label style={labelSt}>Nome do franqueado</label>
@@ -965,7 +943,13 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
                   </div>
                   <div>
                     <label style={labelSt}>WhatsApp</label>
-                    <input value={localUnit.whatsapp} onChange={e=>updateLocal({whatsapp:e.target.value})} placeholder="(XX) XXXXX-XXXX" style={inputSt} />
+                    <div style={{display:"flex",gap:6}}>
+                      <input value={localUnit.whatsapp} onChange={e=>updateLocal({whatsapp:e.target.value})} placeholder="(XX) XXXXX-XXXX" style={{...inputSt,flex:1}} />
+                      {localUnit.whatsapp&&(
+                        <a href={`https://wa.me/55${localUnit.whatsapp.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer"
+                          style={{...btnSt("#25D36622","#25D366"),border:"1px solid #25D36644",textDecoration:"none",whiteSpace:"nowrap",flexShrink:0}}>💬</a>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <label style={labelSt}>Responsável CRM</label>
@@ -974,13 +958,210 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
                     </select>
                   </div>
                   <div>
-                    <label style={labelSt}>Freq. contato</label>
-                    <div style={{padding:"8px 12px",background:C.inset,border:`1px solid ${C.cardBorder}`,borderRadius:8,fontSize:13,color:cfg.color,fontWeight:600}}>
-                      {cfg.freqLabel}
-                    </div>
+                    <label style={labelSt}>Frequência de contato</label>
+                    <div style={{padding:"8px 12px",background:C.inset,border:`1px solid ${C.cardBorder}`,borderRadius:8,fontSize:13,color:cfg.color,fontWeight:600}}>{cfg.freqLabel}</div>
                   </div>
                 </div>
               </div>
+
+              {/* 2. Faturamento */}
+              <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
+                <div style={{fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>Faturamento</div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:10}}>
+                  {[
+                    {label:"Mar/26",value:fmtBRL(localUnit.fatMar),color:C.textPrimary},
+                    {label:"Abr/26",value:fmtBRL(localUnit.fatAbr),color:C.textPrimary},
+                    {label:"Mai/26",value:fmtBRL(localUnit.fatMai),color:C.laranja},
+                  ].map(s=>(
+                    <div key={s.label} style={{textAlign:"center",background:C.inset,borderRadius:8,padding:"8px 6px",border:`1px solid ${C.cardBorder}`}}>
+                      <div style={{fontSize:13,fontWeight:700,color:s.color}}>{s.value}</div>
+                      <div style={{fontSize:9,color:C.textMuted,marginTop:2}}>{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{marginBottom:6}}>
+                  <ProgressBar pct={localUnit.metaProgress} height={6} />
+                  <div style={{display:"flex",justifyContent:"space-between",marginTop:3}}>
+                    <span style={{fontSize:10,color:C.textMuted}}>Mai/26: {fmtBRL(localUnit.fatMai)}</span>
+                    <span style={{fontSize:10,color:localUnit.metaProgress>=100?C.verde:C.laranja,fontWeight:700}}>{localUnit.metaProgress}% da meta Jun/26</span>
+                    <span style={{fontSize:10,color:C.textMuted}}>Meta: {fmtBRL(localUnit.metaJun)}</span>
+                  </div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginTop:10}}>
+                  <div>
+                    <label style={labelSt}>Fat. semana atual (R$)</label>
+                    <input value={diag.fat_semana} onChange={e=>saveDiag({fat_semana:e.target.value})} placeholder="0" style={inputSt} />
+                  </div>
+                  <div>
+                    <label style={labelSt}>Projeção do mês (R$)</label>
+                    <input value={diag.projecao_mes} onChange={e=>saveDiag({projecao_mes:e.target.value})} placeholder="0" style={inputSt} />
+                  </div>
+                  <div>
+                    <label style={labelSt}>Correção projetada (R$)</label>
+                    <input value={diag.correcao_projetada} onChange={e=>saveDiag({correcao_projetada:e.target.value})} placeholder="0" style={inputSt} />
+                  </div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginTop:8}}>
+                  {[
+                    {label:"Investimento",value:fmtBRL(localUnit.investment),color:C.textMuted},
+                    {label:"ROI acumulado",value:`${localUnit.roiAccum}%`,color:localUnit.roiAccum>=100?C.verde:C.laranja},
+                    {label:"Meses p/ payback",value:localUnit.paybackLeft!==null?`~${localUnit.paybackLeft}m`:"—",color:C.azul},
+                  ].map(s=>(
+                    <div key={s.label} style={{background:C.inset,border:`1px solid ${C.cardBorder}`,borderRadius:8,padding:"8px 10px"}}>
+                      <div style={{fontSize:9,color:C.textMuted,marginBottom:2}}>{s.label}</div>
+                      <div style={{fontSize:13,fontWeight:700,color:s.color}}>{s.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 3. Diagnóstico / histórico */}
+              <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
+                <div style={{fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:8}}>Diagnóstico / histórico</div>
+                <textarea value={diag.diagnostico_texto} onChange={e=>saveDiag({diagnostico_texto:e.target.value})}
+                  placeholder="Contexto da unidade, tendências, pontos de atenção..."
+                  style={{...inputSt,height:80,resize:"vertical",width:"100%",boxSizing:"border-box"}} />
+              </div>
+
+              {/* 4. Instagram — verificar antes do contato */}
+              <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
+                <div style={{fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>📱 Instagram — verificar antes do contato</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+                  <div>
+                    <label style={labelSt}>Último feed (dias atrás)</label>
+                    <input value={diag.ig_feed_dias} onChange={e=>saveDiag({ig_feed_dias:e.target.value})} placeholder="ex: 3" style={inputSt} />
+                  </div>
+                  <div>
+                    <label style={labelSt}>Último Reels (dias atrás)</label>
+                    <input value={diag.ig_reels_dias} onChange={e=>saveDiag({ig_reels_dias:e.target.value})} placeholder="ex: 5" style={inputSt} />
+                  </div>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                  {[
+                    {key:"ig_stories_ativo",label:"Stories ativo"},
+                    {key:"ig_trafego_pago",label:"Tráfego pago ativo"},
+                    {key:"ig_campanhas_ativas",label:"Campanhas CK ativas"},
+                    {key:"ig_participacao_campanhas",label:"Participando das campanhas"},
+                  ].map(item=>(
+                    <label key={item.key} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,color:C.textPrimary}}>
+                      <input type="checkbox" checked={!!diag[item.key]} onChange={e=>saveDiag({[item.key]:e.target.checked})}
+                        style={{width:16,height:16,cursor:"pointer",accentColor:C.laranja}} />
+                      {item.label}
+                    </label>
+                  ))}
+                </div>
+                {localUnit.ig_handle&&(
+                  <a href={`https://instagram.com/${localUnit.ig_handle.replace("@","")}`} target="_blank" rel="noopener noreferrer"
+                    style={{display:"inline-block",marginTop:10,fontSize:11,color:C.azul,textDecoration:"none"}}>
+                    📸 Ver @{localUnit.ig_handle} →
+                  </a>
+                )}
+              </div>
+
+              {/* 5. Comercial da semana */}
+              <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
+                <div style={{fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>🛒 Comercial da semana</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+                  <div>
+                    <label style={labelSt}>Novos clientes</label>
+                    <input value={diag.comercial_novos} onChange={e=>saveDiag({comercial_novos:e.target.value})} placeholder="0" style={inputSt} />
+                  </div>
+                  <div>
+                    <label style={labelSt}>Renovações fechadas</label>
+                    <input value={diag.comercial_renovacoes} onChange={e=>saveDiag({comercial_renovacoes:e.target.value})} placeholder="0" style={inputSt} />
+                  </div>
+                  <div>
+                    <label style={labelSt}>Leads em aberto</label>
+                    <input value={diag.comercial_leads} onChange={e=>saveDiag({comercial_leads:e.target.value})} placeholder="0" style={inputSt} />
+                  </div>
+                  <div>
+                    <label style={labelSt}>Atendimentos FDS</label>
+                    <input value={diag.comercial_atend_fds} onChange={e=>saveDiag({comercial_atend_fds:e.target.value})} placeholder="0" style={inputSt} />
+                  </div>
+                </div>
+                <div>
+                  <label style={labelSt}>Dificuldade da semana</label>
+                  <input value={diag.comercial_dificuldade} onChange={e=>saveDiag({comercial_dificuldade:e.target.value})} placeholder="Ex: cancelamentos, concorrência, objeções..." style={inputSt} />
+                </div>
+              </div>
+
+              {/* 6. Resumo das reuniões */}
+              <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
+                <div style={{fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>📅 Reuniões</div>
+                {unitMeetings.length===0?(
+                  <div style={{fontSize:12,color:C.textMuted,textAlign:"center",padding:"12px 0"}}>Nenhuma reunião registrada para esta unidade</div>
+                ):(
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    {unitMeetings.slice(0,3).map(m=>(
+                      <div key={m.id} style={{background:C.inset,border:`1px solid ${C.cardBorder}`,borderRadius:8,padding:"10px 12px"}}>
+                        <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                          <span style={{fontSize:11,fontWeight:700,color:C.textPrimary}}>{fmtDate(m.data)} · {m.tipo}</span>
+                          {m.docId&&<a href={`https://docs.google.com/document/d/${m.docId}`} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:C.azul,textDecoration:"none"}}>🔗 Ata</a>}
+                        </div>
+                        <div style={{fontSize:12,color:C.textPrimary,lineHeight:1.4,marginBottom:m.tarefas?.length>0?6:0}}>{m.resumo}</div>
+                        {m.tarefas?.length>0&&(
+                          <div style={{fontSize:10,color:C.textMuted}}>📌 {m.tarefas.length} tarefa(s) gerada(s) · resp: {m.tarefas[0].resp}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div style={{marginTop:12,display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                  <div>
+                    <label style={labelSt}>Próxima reunião</label>
+                    <input type="date" value={diag.proxima_reuniao} onChange={e=>saveDiag({proxima_reuniao:e.target.value})} style={inputSt} />
+                  </div>
+                  <div>
+                    <label style={labelSt}>Link Meet</label>
+                    <input value={diag.link_meet} onChange={e=>saveDiag({link_meet:e.target.value})} placeholder="meet.google.com/..." style={inputSt} />
+                  </div>
+                </div>
+                {diag.link_meet&&<a href={diag.link_meet} target="_blank" rel="noopener noreferrer" style={{display:"inline-block",marginTop:8,fontSize:11,color:C.verde,textDecoration:"none"}}>🎥 Entrar no Meet →</a>}
+              </div>
+
+              {/* 7. Tarefas abertas */}
+              {openTasks.length>0&&(
+                <div style={{background:C.card,border:`1px solid ${overdueTasks.length>0?"#ef444433":C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                    <div style={{fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em"}}>
+                      Tarefas abertas ({openTasks.length}){overdueTasks.length>0&&<span style={{color:C.red}}> · {overdueTasks.length} vencidas</span>}
+                    </div>
+                    <button onClick={()=>setTab("tasks")} style={{background:"none",border:"none",color:C.azul,fontSize:11,cursor:"pointer"}}>Ver todas →</button>
+                  </div>
+                  {openTasks.slice(0,5).map(t=><TaskRow key={t.id} task={t} onUpdate={updateTask} compact />)}
+                </div>
+              )}
+
+              {/* 8. Checklists */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
+                  <div style={{fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>✅ Checklist semanal</div>
+                  {[
+                    {key:"check_ig_verificado",label:"Instagram verificado antes do contato"},
+                    {key:"check_wpp_enviado",label:"WhatsApp de acompanhamento enviado"},
+                  ].map(item=>(
+                    <label key={item.key} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:12,color:C.textPrimary,marginBottom:8}}>
+                      <input type="checkbox" checked={!!diag[item.key]} onChange={e=>saveDiag({[item.key]:e.target.checked})}
+                        style={{width:15,height:15,cursor:"pointer",accentColor:C.verde}} />
+                      <span style={{textDecoration:diag[item.key]?"line-through":"none",color:diag[item.key]?C.textMuted:C.textPrimary}}>{item.label}</span>
+                    </label>
+                  ))}
+                </div>
+                <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px"}}>
+                  <div style={{fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>✅ Checklist mensal</div>
+                  {[
+                    {key:"check_form_preenchido",label:"Formulário pré-reunião preenchido"},
+                    {key:"check_reuniao_realizada",label:"Reunião realizada"},
+                  ].map(item=>(
+                    <label key={item.key} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:12,color:C.textPrimary,marginBottom:8}}>
+                      <input type="checkbox" checked={!!diag[item.key]} onChange={e=>saveDiag({[item.key]:e.target.checked})}
+                        style={{width:15,height:15,cursor:"pointer",accentColor:C.verde}} />
+                      <span style={{textDecoration:diag[item.key]?"line-through":"none",color:diag[item.key]?C.textMuted:C.textPrimary}}>{item.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
             </div>
           )}
 
