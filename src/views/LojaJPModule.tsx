@@ -18,13 +18,13 @@ export function LojaJPModule({ dbStatus }) {
     if (dbStatus !== "ok") return;
     sb.get("loja_jp", "?select=*&order=created_at.desc").then(rows => {
       if (rows && rows.length) {
-        setStaff(prev => prev.map(s => ({
-          ...s,
-          tasks: rows.filter(r=>r.staff_id===s.id).map(r=>({
+        setStaffTasks(JP_STAFF.reduce((acc,s)=>({
+          ...acc,
+          [s.id]: rows.filter(r=>r.staff_id===s.id).map(r=>({
             id:r.id, titulo:r.titulo, prioridade:r.prioridade,
             status:r.status, prazo:r.prazo||"", observacao:r.observacao||"",
           })),
-        })));
+        }),{}));
       }
     }).catch(()=>{});
   }, [dbStatus]);
