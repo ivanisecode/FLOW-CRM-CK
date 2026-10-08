@@ -566,7 +566,7 @@ const buildUnitsFromDB = (rows) => rows.map((u) => {
   const bercStart = REPASSE_BERCARIO[u.name] || u.inaug;
   const bercDaysUsed = daysSince(bercStart);
   const daysInBercario = group === "BERÇÁRIO" ? 120 - bercDaysUsed : null;
-  const isRepasse = !!REPASSE_BERCARIO[u.name];
+  const isRepasse = u.is_repasse ?? !!REPASSE_BERCARIO[u.name];
   const totalEstFat = avgTri * Math.floor(days / 30);
   const roiAccum = Math.min(Math.round((totalEstFat / INVESTMENT) * 100), 999);
   const paybackLeft = avgTri > 0 ? Math.max(0, Math.round((INVESTMENT - totalEstFat) / avgTri)) : null;
@@ -600,7 +600,7 @@ const buildUnitsFromDB = (rows) => rows.map((u) => {
     razaoSocial: u.razao_social || "", endereco: u.endereco || "",
     telefonePessoal: u.telefone_pessoal || "", telefoneAtendimento: u.telefone_atendimento || "",
     email: u.email || "", dataInauguracao: u.data_inauguracao || u.inaug || "",
-    dataCadastro: u.data_cadastro || "", isRepasse: u.is_repasse ?? isRepasse,
+    dataCadastro: u.data_cadastro || "",
     statusUnidade: u.status_unidade || "",
     lastContactDate: lastMeeting?.data || null,
     lastContactType: lastMeeting?.tipo || null,
