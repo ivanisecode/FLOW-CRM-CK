@@ -1880,6 +1880,24 @@ function calcMarketingScore(data) {
 }
 
 // ─── PRE-MEETING FORM ────────────────────────────────────────
+const Section = ({title, color, children}) => (
+  <div style={{marginBottom:16}}>
+    <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8,paddingBottom:4,borderBottom:`1px solid ${color}33`}}>{title}</div>
+    {children}
+  </div>
+);
+
+const Field = ({label, children}) => (
+  <div style={{marginBottom:8}}>
+    <label style={labelSt}>{label}</label>
+    {children}
+  </div>
+);
+
+const Grid = ({children, cols=2}) => (
+  <div style={{display:"grid",gridTemplateColumns:`repeat(${cols},1fr)`,gap:8}}>{children}</div>
+);
+
 function PreMeetingForm({ unit, onSave, onClose }) {
   const [form, setForm] = useState({
     // Financeiro
@@ -1906,24 +1924,6 @@ function PreMeetingForm({ unit, onSave, onClose }) {
     });
     onSave({ ...form, mktScore });
   }
-
-  const Section = ({title, color, children}) => (
-    <div style={{marginBottom:16}}>
-      <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8,paddingBottom:4,borderBottom:`1px solid ${color}33`}}>{title}</div>
-      {children}
-    </div>
-  );
-
-  const Field = ({label, children}) => (
-    <div style={{marginBottom:8}}>
-      <label style={labelSt}>{label}</label>
-      {children}
-    </div>
-  );
-
-  const Grid = ({children, cols=2}) => (
-    <div style={{display:"grid",gridTemplateColumns:`repeat(${cols},1fr)`,gap:8}}>{children}</div>
-  );
 
   return (
     <div style={{position:"fixed",inset:0,background:"#3a3020bb",display:"flex",alignItems:"center",justifyContent:"center",zIndex:600}}>
@@ -2038,6 +2038,22 @@ function PreMeetingForm({ unit, onSave, onClose }) {
 }
 
 // ─── DASHBOARD VIEW ──────────────────────────────────────────
+const Card = ({title,value,sub,color,onClick}) => (
+  <div onClick={onClick} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px",cursor:onClick?"pointer":"default"}}
+    onMouseEnter={e=>{if(onClick)e.currentTarget.style.background=C.cardHover}}
+    onMouseLeave={e=>{if(onClick)e.currentTarget.style.background=C.card}}>
+    <div style={{fontSize:22,fontWeight:800,color:color||C.textPrimary}}>{value}</div>
+    <div style={{fontSize:11,fontWeight:700,color:C.textPrimary,marginTop:2}}>{title}</div>
+    {sub&&<div style={{fontSize:10,color:C.textMuted,marginTop:1}}>{sub}</div>}
+  </div>
+);
+
+const SectionTitle = ({children,color}) => (
+  <div style={{fontSize:10,fontWeight:700,color:color||C.textMuted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10,paddingBottom:4,borderBottom:`1px solid ${(color||C.textMuted)+"33"}`}}>
+    {children}
+  </div>
+);
+
 function DashboardView({ units, onSelectUnit }) {
   const [viewMode, setViewMode] = useState("diretoria"); // diretoria | supervisao | rede
   const [showPreMeeting, setShowPreMeeting] = useState(null);
@@ -2088,22 +2104,6 @@ function DashboardView({ units, onSelectUnit }) {
     {id:"supervisao",label:"📋 Supervisão"},
     {id:"rede",label:"🌐 Rede"},
   ];
-
-  const Card = ({title,value,sub,color,onClick}) => (
-    <div onClick={onClick} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"12px 14px",cursor:onClick?"pointer":"default"}}
-      onMouseEnter={e=>{if(onClick)e.currentTarget.style.background=C.cardHover}}
-      onMouseLeave={e=>{if(onClick)e.currentTarget.style.background=C.card}}>
-      <div style={{fontSize:22,fontWeight:800,color:color||C.textPrimary}}>{value}</div>
-      <div style={{fontSize:11,fontWeight:700,color:C.textPrimary,marginTop:2}}>{title}</div>
-      {sub&&<div style={{fontSize:10,color:C.textMuted,marginTop:1}}>{sub}</div>}
-    </div>
-  );
-
-  const SectionTitle = ({children,color}) => (
-    <div style={{fontSize:10,fontWeight:700,color:color||C.textMuted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10,paddingBottom:4,borderBottom:`1px solid ${(color||C.textMuted)+"33"}`}}>
-      {children}
-    </div>
-  );
 
   return (
     <div style={{padding:"14px 14px"}}>
