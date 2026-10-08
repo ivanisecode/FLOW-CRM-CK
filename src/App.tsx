@@ -425,7 +425,6 @@ const RAW_UNITS = [
 const daysSince = (d) => Math.floor((TODAY - new Date(d)) / 86400000);
 const fmtBRL = (n) => new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}).format(n||0);
 const fmtDate = (s) => { if(!s) return "—"; const [y,m,d]=s.split("-"); return `${d}/${m}/${y}`; };
-const fmtDateShort = (s) => { if(!s) return "—"; const [y,m,d]=s.split("-"); return `${d}/${m}`; };
 
 function getGroup(fat, inaug, name) {
   if (REPASSE_BERCARIO[name] && daysSince(REPASSE_BERCARIO[name]) < 120) return "BERÇÁRIO";
@@ -778,7 +777,7 @@ function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
     sb.get("unit_diagnostico",`?unit_id=eq.${unit.id}&select=*`).then(rows=>{
       if(rows&&rows[0]) setDiag(prev=>({...prev,...rows[0]}));
     }).catch(()=>{}).finally(()=>setDiagLoaded(true));
-  },[unit.id]);
+  },[unit.id, diagLoaded]);
 
   function saveDiag(updates) {
     const next = {...diag,...updates};
@@ -2054,7 +2053,7 @@ const SectionTitle = ({children,color}) => (
   </div>
 );
 
-function DashboardView({ units, onSelectUnit }) {
+function DashboardView({ units }) {
   const [viewMode, setViewMode] = useState("diretoria"); // diretoria | supervisao | rede
   const [showPreMeeting, setShowPreMeeting] = useState(null);
   const [preMeetingData, setPreMeetingData] = useState({});
@@ -2065,8 +2064,6 @@ function DashboardView({ units, onSelectUnit }) {
   const inProgressTasks = allTasks.filter(t=>t.status==="em_andamento");
   const doneTasks = allTasks.filter(t=>t.status==="concluido");
   const overdueTasks = openTasks.filter(t=>t.meetingData&&daysSince(t.meetingData)>14);
-  const tasksByResp = openTasks.reduce((acc,t)=>({...acc,[t.responsavel]:(acc[t.responsavel]||0)+1}),{});
-  const inProgressByResp = inProgressTasks.reduce((acc,t)=>({...acc,[t.responsavel]:(acc[t.responsavel]||0)+1}),{});
 
   const unitsWithContact = units.filter(u=>u.lastContactDate);
   const unitsNeedContact = units.filter(u=>{
@@ -2476,7 +2473,7 @@ function CampanhasView({ units, onUpdateUnit }) {
     const camp = CAMPAIGNS_DATA.find(c=>c.id===campId);
     const total = camp.itensObrigatorios.length;
     const done = Object.values(newItens).filter(Boolean).length;
-    let aderiu = current.aderiu;
+    let aderiu;
     if (done === 0) aderiu = "nao";
     else if (done === total) aderiu = "sim";
     else aderiu = "parcial";
@@ -2787,7 +2784,6 @@ function CampanhasView({ units, onUpdateUnit }) {
                   gs[adh.aderiu||"sem_resposta"]++;
                 });
                 const pct=gUnits.length>0?Math.round(((gs.sim+gs.parcial)/gUnits.length)*100):0;
-                const cfg=GROUP_CFG[group];
                 return (
                   <tr key={group} style={{borderBottom:`1px solid ${C.cardBorder}`}}>
                     <td style={{padding:"8px 12px"}}><GroupBadge group={group} small /></td>
@@ -2871,7 +2867,6 @@ const JP_STAFF = [
 // ─── INAUGURATION MODULE ─────────────────────────────────────
 function InaugurationModule({ units, dbStatus }) {
   const [activeUnit, setActiveUnit] = useState(null);
-  const [unitsData, setUnitsData] = useState({});
   const [filterStatus, setFilterStatus] = useState("em_gestacao");
   const [newUnit, setNewUnit] = useState({ nome:"", dataContrato:"", dataGrupoWPP:"" });
   const [showAddForm, setShowAddForm] = useState(false);
@@ -2952,10 +2947,6 @@ function InaugurationModule({ units, dbStatus }) {
       const newChecks = { ...etapaChecks, [itemId]: val };
       const newEtapaChecks = { ...ec, [etapaId]: newChecks };
       if (dbStatus==="ok") sb.upsert("inauguracao",{id:unitId,etapa_checks:newEtapaChecks,updated_at:new Date().toISOString()},"id").catch(()=>{});
-      // Auto-advance etapa when all items checked
-      const etapa = ETAPAS_GESTACAO.find(e => e.id === etapaId);
-      const etapaItems = etapa?.id === "e1" ? ETAPA1_ITEMS : [];
-      const allDone = etapaItems.length > 0 && etapaItems.every(i => newChecks[i.id]);
       return { ...u, etapaChecks: newEtapaChecks };
     }));
   }
@@ -3182,157 +3173,6 @@ function InaugurationModule({ units, dbStatus }) {
           })}
         </div>
       )}
-    </div>
-  );
-}
-
-// ─── ANIVERSARIANTES/DESTAQUES MODULE ────────────────────────
-function AniversariantesModule({ dbStatus }) {
-  const [mes, setMes] = useState(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`; });
-  const [demandas, setDemandas] = useState([]);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ tipo:"aniversariante", nome:"", unidade:"", artePedida:"", arteLink:"", dataEnvioArte:"", dataPublicacao:"", statusArte:"pendente", observacao:"" });
-
-  useEffect(() => {
-    if (dbStatus !== "ok") return;
-    sb.get("demandas_arte", "?select=*&order=created_at.desc").then(rows => {
-      if (rows && rows.length) setDemandas(rows.map(r => ({
-        id: r.id, tipo: r.tipo, nome: r.nome, unidade: r.unidade,
-        artePedida: r.arte_pedida||"", arteLink: r.arte_link||"",
-        dataEnvioArte: r.data_envio_arte||"", dataPublicacao: r.data_publicacao||"",
-        statusArte: r.status_arte||"pendente", observacao: r.observacao||"",
-      })));
-    }).catch(() => {});
-  }, [dbStatus]);
-
-  const STATUS_ARTE = {
-    pendente: { label:"Pendente", color:C.amareloTxt },
-    solicitado: { label:"Solicitado para Artur", color:C.azul },
-    pronto: { label:"Arte pronta", color:C.verde },
-    publicado: { label:"Publicado @franquiasclubkids", color:C.verde },
-  };
-
-  const mesDemandas = demandas.filter(d => d.mes === mes);
-  const aniversariantes = mesDemandas.filter(d => d.tipo === "aniversariante");
-  const destaques = mesDemandas.filter(d => d.tipo === "destaque");
-
-  const mesLabel = new Date(mes+"-15").toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
-  const hoje = new Date("2026-06-03");
-  const quintoUtil = new Date(mes+"-05");
-
-  function addDemanda() {
-    if (!form.nome.trim()) return;
-    setDemandas(prev=>[...prev,{...form,id:Date.now(),mes,criadoEm:hoje.toISOString().slice(0,10)}]);
-    setForm({tipo:"aniversariante",nome:"",unidade:"",artePedida:"",arteLink:"",dataEnvioArte:"",dataPublicacao:"",statusArte:"pendente",observacao:""});
-    setShowForm(false);
-  }
-
-  function updateDemanda(id,updates) { setDemandas(prev=>prev.map(d=>d.id===id?{...d,...updates}:d)); }
-
-  return (
-    <div style={{padding:"14px 14px"}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
-        <div>
-          <div style={{fontSize:20,fontWeight:800,color:C.textPrimary,letterSpacing:"-0.02em"}}>🎂 Aniversariantes e Destaques</div>
-          <div style={{fontSize:13,color:C.textMuted,marginTop:2}}>Controle mensal — Will gera até 5º dia útil → Artur cria arte → @franquiasclubkids</div>
-        </div>
-        <div style={{display:"flex",gap:8,alignItems:"center"}}>
-          <input type="month" value={mes} onChange={e=>setMes(e.target.value)} style={{...inputSt,width:140}} />
-          <button onClick={()=>setShowForm(!showForm)} style={btnSt(C.laranja)}>+ Adicionar</button>
-        </div>
-      </div>
-
-      {/* Status bar */}
-      <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"10px 16px",marginBottom:14,display:"flex",gap:20,flexWrap:"wrap",alignItems:"center"}}>
-        <div>
-          <span style={{fontSize:11,color:C.textMuted}}>Mês: </span>
-          <span style={{fontSize:12,fontWeight:700,color:C.textPrimary,textTransform:"capitalize"}}>{mesLabel}</span>
-        </div>
-        <div>
-          <span style={{fontSize:11,color:C.textMuted}}>Prazo Will: </span>
-          <span style={{fontSize:12,fontWeight:700,color:C.amareloTxt}}>até 5º dia útil</span>
-        </div>
-        <div style={{display:"flex",gap:12}}>
-          <span style={{fontSize:11,color:C.textMuted}}>🎂 Aniversariantes: <b style={{color:C.textPrimary}}>{aniversariantes.length}</b></span>
-          <span style={{fontSize:11,color:C.textMuted}}>⭐ Destaques: <b style={{color:C.textPrimary}}>{destaques.length}</b></span>
-          <span style={{fontSize:11,color:C.verde}}>✅ Publicados: <b>{mesDemandas.filter(d=>d.statusArte==="publicado").length}</b></span>
-        </div>
-      </div>
-
-      {/* Form */}
-      {showForm&&(
-        <div style={{background:C.card,border:`1px solid ${C.laranja}44`,borderRadius:10,padding:14,marginBottom:14}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:8}}>
-            <div>
-              <label style={labelSt}>Tipo</label>
-              <select value={form.tipo} onChange={e=>setForm({...form,tipo:e.target.value})} style={inputSt}>
-                <option value="aniversariante">🎂 Aniversariante</option>
-                <option value="destaque">⭐ Destaque do mês</option>
-              </select>
-            </div>
-            <div>
-              <label style={labelSt}>Nome do franqueado</label>
-              <input value={form.nome} onChange={e=>setForm({...form,nome:e.target.value})} placeholder="Nome" style={inputSt} />
-            </div>
-            <div>
-              <label style={labelSt}>Unidade</label>
-              <input value={form.unidade} onChange={e=>setForm({...form,unidade:e.target.value})} placeholder="Ex: PR - TOLEDO" style={inputSt} />
-            </div>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
-            <div>
-              <label style={labelSt}>Descrição da arte pedida a Artur</label>
-              <input value={form.artePedida} onChange={e=>setForm({...form,artePedida:e.target.value})} placeholder="Ex: card aniversário padrão com foto" style={inputSt} />
-            </div>
-            <div>
-              <label style={labelSt}>Status da arte</label>
-              <select value={form.statusArte} onChange={e=>setForm({...form,statusArte:e.target.value})} style={inputSt}>
-                {Object.entries(STATUS_ARTE).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
-              </select>
-            </div>
-          </div>
-          <div style={{display:"flex",gap:8}}>
-            <button onClick={addDemanda} style={btnSt(C.laranja)}>Adicionar</button>
-            <button onClick={()=>setShowForm(false)} style={btnSt("transparent",C.textMuted)}>Cancelar</button>
-          </div>
-        </div>
-      )}
-
-      {/* List by type */}
-      {[{tipo:"aniversariante",label:"🎂 Aniversariantes",items:aniversariantes},{tipo:"destaque",label:"⭐ Destaques do mês",items:destaques}].map(section=>(
-        <div key={section.tipo} style={{marginBottom:16}}>
-          <div style={{fontSize:12,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:8}}>
-            {section.label} ({section.items.length})
-          </div>
-          {section.items.length===0?(
-            <div style={{padding:"14px",background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,fontSize:12,color:C.textMuted,textAlign:"center"}}>
-              Nenhum {section.tipo} registrado para {mesLabel}
-            </div>
-          ):(
-            <div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,overflow:"hidden"}}>
-              {section.items.map((d,i)=>{
-                const sc=STATUS_ARTE[d.statusArte];
-                return (
-                  <div key={d.id} style={{padding:"10px 14px",borderBottom:i<section.items.length-1?`1px solid ${C.cardBorder}`:"none",display:"flex",alignItems:"center",gap:12}}>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:13,fontWeight:600,color:C.textPrimary}}>{d.nome}</div>
-                      <div style={{fontSize:11,color:C.textMuted}}>{d.unidade}</div>
-                      {d.artePedida&&<div style={{fontSize:10,color:C.textMuted,marginTop:2}}>Arte: {d.artePedida}</div>}
-                    </div>
-                    <div style={{display:"flex",gap:8,alignItems:"center",flexShrink:0}}>
-                      {d.arteLink&&<a href={d.arteLink} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:C.azul,textDecoration:"none"}}>🔗 Arte</a>}
-                      <select value={d.statusArte} onChange={e=>updateDemanda(d.id,{statusArte:e.target.value})}
-                        style={{background:C.inset,border:`1px solid ${C.cardBorder}`,color:sc.color,fontSize:10,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>
-                        {Object.entries(STATUS_ARTE).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      ))}
     </div>
   );
 }
@@ -3639,7 +3479,7 @@ function ScoreBadge({ score }) {
   );
 }
 
-function DiagnosticoSection({ unit, onAddTask, dbStatus }) {
+function DiagnosticoSection({ unit, onAddTask }) {
   const [diag, setDiag] = useState(DIAG_DEFAULT);
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -3648,12 +3488,11 @@ function DiagnosticoSection({ unit, onAddTask, dbStatus }) {
 
   useEffect(()=>{
     let alive = true;
-    setLoaded(false); setDiag(DIAG_DEFAULT); setDirty(false); setSavedAt(null);
     (async()=>{
       try {
         const rows = await sb.get("unit_diagnostico", `?unit_id=eq.${unit.id}&limit=1`);
         if(alive&&rows&&rows[0]) setDiag({...DIAG_DEFAULT,...rows[0]});
-      } catch(e){ /* tabela pode não existir ainda */ }
+      } catch { /* tabela pode não existir ainda */ }
       if(alive) setLoaded(true);
     })();
     return ()=>{ alive=false; };
@@ -4035,7 +3874,7 @@ function AcompanhamentoView({ units, onUpdateUnit }) {
           </div>
 
           {/* ── Diagnóstico: Instagram + Atendimento ── */}
-          <DiagnosticoSection unit={unit} onAddTask={addQuickTask} />
+          <DiagnosticoSection key={unit.id} unit={unit} onAddTask={addQuickTask} />
 
           {/* ── Reuniões ── */}
           <div style={{fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 8px 2px"}}>🗓 Reuniões com a supervisão</div>
@@ -5040,7 +4879,7 @@ function ImportFaturamentoModal({ units, onClose, onImport }) {
       const nums = matches.map(m=>parseFloat(m.replace(/[R$\s.]/g,"").replace(",","."))).filter(n=>!isNaN(n));
       if(nums.length){ const maior=Math.max(...nums); setValor(String(maior.toFixed(2))); setHint(`${nums.length} valores detectados — sugerido o maior (R$ ${maior.toFixed(2)}). Confira e ajuste.`); }
       else setHint("Não detectei valores automaticamente. Digite o faturamento manualmente.");
-    } catch(err){ setHint("Não consegui ler o PDF. Digite o valor manualmente."); }
+    } catch { setHint("Não consegui ler o PDF. Digite o valor manualmente."); }
     setParsing(false);
   }
 
@@ -5135,7 +4974,7 @@ function mesFromDDMM(dm){ if(!dm) return null; const p=dm.split("/"); return p.l
 function diaFromDDMM(dm){ if(!dm) return null; return parseInt(dm.split("/")[0],10); }
 function diaFromISO(iso){ if(!iso) return null; const p=iso.split("-"); return p.length>=3?parseInt(p[2],10):null; }
 
-function AniversariantesView({ units, dbStatus }) {
+function AniversariantesView({ units }) {
   const mesAtual = TODAY.getMonth()+1;
   const [mes, setMes] = useState(mesAtual);
   const [aba, setAba] = useState("unidades"); // unidades | franqueados
@@ -5264,7 +5103,7 @@ export default function FlowCRM() {
           const us = await sb.get("usuarios", "?select=*&order=nome");
           if (us && us.length) setUsuarios(us);
           else setUsuarios([{id:"u_iva",nome:"Ivanise",email:"",whatsapp:""},{id:"u_will",nome:"Will",email:"",whatsapp:""}]);
-        } catch(e){ setUsuarios([{id:"u_iva",nome:"Ivanise",email:"",whatsapp:""},{id:"u_will",nome:"Will",email:"",whatsapp:""}]); }
+        } catch { setUsuarios([{id:"u_iva",nome:"Ivanise",email:"",whatsapp:""},{id:"u_will",nome:"Will",email:"",whatsapp:""}]); }
         if (rows && rows.length > 0) {
           const built = buildUnitsFromDB(rows);
           // Merge contacts from DB into units
@@ -5316,7 +5155,7 @@ export default function FlowCRM() {
       } catch (err) {
         console.warn("Supabase unavailable:", err.message);
         setUnits(mergeSeedCadastro(buildUnits()));
-        if(usuarios.length===0) setUsuarios([{id:"u_iva",nome:"Ivanise",email:"",whatsapp:""},{id:"u_will",nome:"Will",email:"",whatsapp:""}]);
+        setUsuarios(prev => prev.length ? prev : [{id:"u_iva",nome:"Ivanise",email:"",whatsapp:""},{id:"u_will",nome:"Will",email:"",whatsapp:""}]);
         setDbStatus("offline");
       } finally {
         setLoading(false);
@@ -5432,7 +5271,7 @@ export default function FlowCRM() {
               data_fim: task.dataFim || null,
               updated_at: new Date().toISOString(),
             });
-          } catch(e) { /* ignore */ }
+          } catch { /* ignore */ }
         }
       }
     } catch (err) {
