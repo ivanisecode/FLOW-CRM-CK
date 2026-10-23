@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { CKLogo, CKWordmark, TopBar } from "./components/TopBar";
 import { MEETINGS_DATA } from "./data/meetings";
 import { C } from "./lib/constants";
-import { SUPABASE_URL, sb } from "./lib/supabase";
+import { SUPABASE_URL, auth, sb, type Sessao } from "./lib/supabase";
+import { LoginView, SemPermissao } from "./views/LoginView";
 import { buildUnits, buildUnitsFromDB, mergeSeedCadastro } from "./lib/units";
 import { AcompanhamentoView } from "./views/AcompanhamentoView";
 import { CadastroUnidadesView, CarteiraView, ImportFaturamentoModal, UsuariosView } from "./views/Admin";
@@ -18,8 +19,29 @@ import { PanelView, StatsBar } from "./views/PanelView";
 import { Print3DModule } from "./views/Print3DModule";
 import { UnitDetail } from "./views/UnitDetail";
 
+// ─── LOGIN GATE ───────────────────────────────────────────────
+export default function App() {
+  const [retorno] = useState(() => auth.lerRetornoDoEmail());
+  const [sessao, setSessao] = useState<Sessao | null>(() => retorno?.sessao || auth.sessao());
+  const [modo, setModo] = useState<"entrar" | "nova">(retorno?.tipo === "recovery" ? "nova" : "entrar");
+  const [equipe, setEquipe] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!sessao || modo === "nova") return;
+    let vivo = true;
+    sb.rpc("eh_equipe").then(r => { if (vivo) setEquipe(r !== false); }).catch(() => { if (vivo) setEquipe(true); });
+    return () => { vivo = false; };
+  }, [sessao, modo]);
+
+  const sair = () => { auth.sair(); setSessao(null); setEquipe(null); setModo("entrar"); };
+  if (!sessao || modo === "nova") return <LoginView modoInicial={modo} onEntrou={s => { setModo("entrar"); setSessao(s); }} />;
+  if (equipe === false) return <SemPermissao email={sessao.email} onSair={sair} />;
+  if (equipe === null) return null;
+  return <FlowCRM email={sessao.email} onSair={sair} />;
+}
+
 // ─── APP ROOT ─────────────────────────────────────────────────
-export default function FlowCRM() {
+function FlowCRM({ email, onSair }: { email: string; onSair: () => void }) {
   const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState("connecting");
@@ -246,6 +268,10 @@ export default function FlowCRM() {
     }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');`}</style>
       <TopBar activeTab={activeTab} setActiveTab={setActiveTab} dbStatus={dbStatus} />
+      <div style={{display:"flex",justifyContent:"flex-end",alignItems:"center",gap:8,padding:"4px 14px",fontSize:11,color:C.textMuted,background:C.card,borderBottom:`1px solid ${C.cardBorder}`}}>
+        <span>{email}</span>
+        <button onClick={onSair} style={{background:"none",border:`1px solid ${C.cardBorder}`,borderRadius:6,padding:"2px 8px",fontSize:11,cursor:"pointer",color:C.textPrimary,fontFamily:"inherit"}}>Sair</button>
+      </div>
       <StatsBar units={units} />
       <div style={{maxWidth:"100%", overflowX:"hidden"}}>
         {activeTab==="panel"&&<PanelView units={units} onSelectUnit={setSelectedUnit} />}
