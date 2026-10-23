@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>clubkids Sinop | plano e tarefas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+<style>
+/* layout: uma coluna de celular, um dia por vez, cartões grandes com botão de feito */
+:root{
+  --fundo:#F4EDD6; --cartao:#FFFFFF; --tinta:#2B2B3B; --suave:#5A5866; --linha:#E3D8B8;
+  --laranja:#F19134; --verde:#6ECE87; --verde-tinta:#1F6B3A; --azul:#6E81BF; --rosa:#FCCCDC; --amarelo:#F9D856;
+  --feito:#E4F5E9; --barra:#2B2B3B; --barra-tinta:#F4EDD6;
+  --fonte:"Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --fundo:#1E1D27; --cartao:#2A2935; --tinta:#F4EDD6; --suave:#C9C3B0; --linha:#3B3A48;
+  --feito:#203A2A; --verde-tinta:#8FE0A6; --barra:#121119; --barra-tinta:#F4EDD6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --fundo:#1E1D27; --cartao:#2A2935; --tinta:#F4EDD6; --suave:#C9C3B0; --linha:#3B3A48;
+  --feito:#203A2A; --verde-tinta:#8FE0A6; --barra:#121119; --barra-tinta:#F4EDD6; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--fundo);color:var(--tinta);font-family:var(--fonte);font-size:18px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--barra)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--azul);outline-offset:3px}
+
+.topo{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--barra);color:var(--barra-tinta);
+  padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.topo-in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.marca{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.marca b{font-size:20px;font-weight:800;letter-spacing:-.3px}
+.marca span{font-size:15px;opacity:.8}
+.abas{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.abas button{border:0;border-radius:999px;padding:10px 8px;background:transparent;color:var(--barra-tinta);font-weight:600;font-size:16px;cursor:pointer;min-height:44px}
+.abas button[aria-pressed="true"]{background:var(--barra-tinta);color:var(--barra)}
+
+main{max-width:560px;margin:0 auto;padding-block:20px 40px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:16px}
+
+.dia{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dia h1{margin:0;font-size:30px;line-height:1.1;font-weight:800;text-transform:lowercase;text-wrap:balance;text-align:center;flex:1}
+.dia small{display:block;font-size:16px;font-weight:500;color:var(--suave)}
+.seta{width:52px;height:52px;flex:none;border-radius:50%;border:2px solid var(--tinta);background:transparent;font-size:24px;font-weight:700;cursor:pointer}
+.seta:disabled{opacity:.25;cursor:default}
+
+.progresso{display:flex;align-items:center;gap:12px;font-weight:600}
+.progresso .trilho{flex:1;height:12px;background:var(--cartao);border-radius:999px;overflow:hidden;border:1px solid var(--linha)}
+.progresso .trilho i{display:block;height:100%;background:var(--verde);border-radius:999px;transition:width .3s}
+
+.cartao{background:var(--cartao);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--linha)}
+.cartao h2{margin:0;font-size:22px;font-weight:800;text-transform:lowercase;display:flex;align-items:center;gap:10px}
+.etiqueta{display:inline-block;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--rosa);color:#2B2B3B;text-transform:lowercase}
+.etiqueta.lar{background:var(--laranja)}.etiqueta.am{background:var(--amarelo)}.etiqueta.az{background:var(--azul);color:#fff}
+.info{margin:0;color:var(--suave);font-size:16px}
+
+.tarefa{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:16px;border:2px solid var(--linha);background:transparent;text-align:left;cursor:pointer;width:100%}
+.tarefa .caixa{flex:none;width:34px;height:34px;border-radius:10px;border:3px solid var(--tinta);display:grid;place-items:center;font-size:20px;font-weight:800;color:transparent}
+.tarefa[aria-checked="true"]{background:var(--feito);border-color:var(--verde)}
+.tarefa[aria-checked="true"] .caixa{background:var(--verde);border-color:var(--verde);color:#1F3A26}
+.tarefa .txt{display:flex;flex-direction:column;gap:4px;min-width:0}
+.tarefa .txt b{font-weight:700}
+.tarefa .txt span{color:var(--suave);font-size:16px}
+
+.copiar{display:flex;flex-direction:column;gap:8px;background:var(--fundo);border-radius:14px;padding:12px 14px}
+.copiar p{margin:0;font-weight:600}
+.copiar small{color:var(--suave);font-size:14px}
+.btn{border:0;border-radius:999px;min-height:48px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--laranja);color:#2B2B3B;font-size:17px}
+.btn.contorno{background:transparent;border:2px solid var(--tinta);color:var(--tinta)}
+.btn.largo{width:100%}
+
+ol.roteiro{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+ol.roteiro li{padding-left:4px}
+.fala{font-weight:600}
+.cena{color:var(--suave);font-style:italic}
+
+.mes{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.mes .cab{text-align:center;font-size:13px;font-weight:700;color:var(--suave);text-transform:lowercase}
+.mes button{aspect-ratio:1;border-radius:12px;border:2px solid var(--linha);background:var(--cartao);font-weight:700;font-size:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;min-width:0}
+.mes button small{font-size:11px;font-weight:600;color:var(--suave)}
+.mes button.cheio{background:var(--verde);border-color:var(--verde);color:#1F3A26}
+.mes button.cheio small{color:#1F3A26}
+.mes button.meio{border-color:var(--laranja)}
+.mes button.hoje{outline:3px solid var(--tinta);outline-offset:1px}
+.legenda{display:flex;flex-wrap:wrap;gap:14px;font-size:14px;color:var(--suave)}
+.legenda span{display:inline-flex;align-items:center;gap:6px}
+.legenda i{width:14px;height:14px;border-radius:4px;display:inline-block;border:2px solid var(--linha)}
+
+.guia h3{margin:0;font-size:19px;font-weight:700;text-transform:lowercase}
+.guia ol,.guia ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--barra);color:var(--barra-tinta);padding:12px 20px;border-radius:999px;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.abas{grid-template-columns:repeat(5,auto)!important;gap:2px!important}
+.abas button{font-size:13.5px!important;padding:10px 6px!important;white-space:nowrap}
+.tk{border:2px solid var(--linha);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;background:transparent}
+.tk[data-s="andamento"]{border-color:var(--amarelo)}
+.tk[data-s="feito"]{border-color:var(--verde);background:var(--feito)}
+.tk[data-s="nao"]{border-color:#E86A6A}
+.tk-tit{display:flex;flex-direction:column;gap:4px}
+.tk-tit b{font-weight:700}
+.tk-tit span{color:var(--suave);font-size:16px;overflow-wrap:anywhere}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.seg button{border:2px solid var(--linha);border-radius:10px;background:var(--cartao);min-height:44px;font-size:13px;font-weight:700;cursor:pointer;padding:4px 2px;line-height:1.1}
+.seg button[aria-pressed="true"][data-v="inicio"]{background:var(--linha);border-color:var(--linha)}
+.seg button[aria-pressed="true"][data-v="andamento"]{background:var(--amarelo);border-color:var(--amarelo);color:#2B2B3B}
+.seg button[aria-pressed="true"][data-v="feito"]{background:var(--verde);border-color:var(--verde);color:#1F3A26}
+.seg button[aria-pressed="true"][data-v="nao"]{background:#E86A6A;border-color:#E86A6A;color:#fff}
+details.obs summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--suave)}
+details.obs textarea{margin-top:8px;width:100%;min-height:70px;border-radius:12px;border:2px solid var(--linha);background:var(--cartao);color:var(--tinta);font:inherit;font-size:16px;padding:10px}
+.post{display:flex;flex-direction:column;gap:12px}
+.post-topo{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.post h3{margin:0;font-size:21px;font-weight:800;line-height:1.2}
+.ficha{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:16px}
+.ficha dt{color:var(--suave);font-weight:600}
+.ficha dd{margin:0;font-weight:600}
+details.item{background:var(--cartao);border:1px solid var(--linha);border-radius:18px;padding:14px 16px}
+details.item.dentro{background:transparent;border:2px dashed var(--linha)}
+details.item>summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center}
+details.item>summary::-webkit-details-marker{display:none}
+details.item[open]>summary{margin-bottom:12px}
+.data{flex:none;width:58px;text-align:center;border-radius:12px;background:var(--fundo);padding:6px 0;font-weight:800;line-height:1.1}
+.data small{display:block;font-size:12px;font-weight:600;color:var(--suave)}
+.resumo-post{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.resumo-post b{font-size:17px}
+.resumo-post span{font-size:14px;color:var(--suave)}
+.chip{flex:none;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--linha)}
+.chip.andamento{background:var(--amarelo);color:#2B2B3B}.chip.feito{background:var(--verde);color:#1F3A26}.chip.nao{background:#E86A6A;color:#fff}
+.semana-tit{margin:8px 0 0;font-size:15px;font-weight:700;color:var(--suave);text-transform:lowercase}
+.slides{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.btn.wa{background:var(--verde);color:#1F3A26;text-align:center;text-decoration:none;display:grid;place-items:center}
+.linha-btn{display:flex;gap:8px;flex-wrap:wrap}
+.linha-btn .btn{flex:1}
+.tabela{width:100%;border-collapse:collapse;font-size:15px}
+.tabela th,.tabela td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--linha);vertical-align:top}
+.tabela th{color:var(--suave);font-weight:700;font-size:13px;text-transform:lowercase}
+.ind{display:grid;grid-template-columns:1fr repeat(4,52px);gap:6px;align-items:center;font-size:14px}
+.ind input{width:100%;min-height:40px;border-radius:10px;border:2px solid var(--linha);background:var(--cartao);color:var(--tinta);font:inherit;font-size:15px;text-align:center;padding:4px}
+.ind .h{font-weight:700;color:var(--suave);text-align:center;font-size:13px}
+.pend{display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:14px;background:var(--fundo);text-align:left;border:0;cursor:pointer;width:100%}
+.pend b{font-size:16px}.pend span{font-size:14px;color:var(--suave)}
+</style>
+
+</head>
+<body>
+<header class="topo">
+  <div class="topo-in">
+    <div class="marca"><b>clubkids sinop</b><span>plano e tarefas da Joice <small id="sync" style="display:block;font-size:12px;opacity:.85;text-align:right"></small></span></div>
+    <div class="abas" role="group" aria-label="seções">
+      <button type="button" data-aba="reuniao" aria-pressed="false">reunião</button>
+      <button type="button" data-aba="plano" aria-pressed="false">plano</button>
+      <button type="button" data-aba="guia" aria-pressed="false">guia</button>
+      <button type="button" data-aba="crono" aria-pressed="false">cronograma</button>
+      <button type="button" data-aba="hoje" aria-pressed="true">fazer hoje</button>
+    </div>
+  </div>
+</header>
+<main id="app"></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const ANO = 2026, MES = 10; // novembro (0 = janeiro)
+const DIAS_SEM = ["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
+const CURTO = ["dom","seg","ter","qua","qui","sex","sáb"];
+const LINK_APP = "[link do app]";
+const TAGS = "#clubkidssinop #sinop #sinopmt #maternidade #aluguelinfantil";
+const POSTS = [
+  {dia:3, hora:"19h", tipo:"Reels", tema:"Apresentação", item:"Vitrine da unidade", gravar:2,
+   tela:"mãe em Sinop? esse vídeo é pra você",
+   roteiro:[["fala","\"Se você é mãe em Sinop e ainda não conhece o clubkids, esse vídeo é pra você.\""],["cena","Você andando entre os itens. 3 cortes rápidos: extratora, elétrico, playground."],["fala","\"Aqui você aluga o brinquedo e o item certo para cada fase do seu filho, higienizado, sem comprar o que vai usar por poucos meses.\""],["fala","\"Eu sou a Joice. Me chama no WhatsApp ou pede pelo app, link na bio.\""]],
+   legenda:"Oi, Sinop! Sou a Joice e cuido do clubkids aqui na cidade 💛\nAluguel de brinquedos e itens para bebês e crianças, higienizados e entregues na sua casa.\nPeça pelo app (link na bio) ou me chama no WhatsApp."},
+  {dia:5, hora:"19h", tipo:"Reels", tema:"Amamentação", item:"Extratora de leite", gravar:2,
+   tela:"você não precisa comprar uma extratora",
+   roteiro:[["fala","\"Você não precisa comprar uma extratora de leite.\""],["cena","Caixa da extratora. Você mostra as peças. Close na higienização."],["fala","\"Ela é o item mais alugado aqui em Sinop. Você usa no período que precisa e devolve.\""]],
+   legenda:"Extratora de leite para alugar em Sinop 🍼\nVocê usa no período que precisa, higienizada e pronta para usar, e devolve.\nPeça pelo app, link na bio."},
+  {dia:7, hora:"19h", tipo:"Reels", tema:"Cada fase", item:"Jumper Joyful (Giro)", gravar:2,
+   tela:"seu bebê quer ficar em pé o tempo todo?",
+   roteiro:[["fala","\"Seu bebê quer ficar em pé o tempo todo?\""],["cena","Jumper montado. Você mostra os brinquedos do painel. Bebê usando só com autorização dos pais."],["fala","\"Esse é o Jumper. Ele brinca, pula e você ganha uns minutinhos. E ele está com preço especial no site.\""]],
+   legenda:"Jumper Joyful com preço especial no site ✨\nEle brinca, pula e você ganha uns minutinhos.\nPromoções não acumulativas. Peça pelo app, link na bio."},
+  {dia:10, hora:"12h", tipo:"Carrossel", tema:"Cada fase", item:"Itens de 0 a 6 meses", gravar:9,
+   slides:["Capa: você segurando um item. Texto: \"do zero aos 6 meses: o que alugar\"","Extratora de leite","Balanço ou cadeirinha de descanso","Tapete de atividades (Gymini)","Berço. Texto: \"aluga pelo app, link na bio\""],
+   legenda:"Do zero aos 6 meses: o que vale alugar em vez de comprar 👶\nItens que o bebê usa por poucos meses, higienizados e entregues em Sinop.\nSalve para lembrar e peça pelo app, link na bio."},
+  {dia:10, hora:"19h", tipo:"Reels collab", tema:"Parceria", item:"Extratora ou tapete", gravar:9,
+   tela:"",
+   roteiro:[["cena","Combine antes com a parceira (consultora de amamentação, fotógrafa newborn ou @danidomingosdebrito)."],["fala","Ela responde 1 dúvida da fase. Você mostra o item que ajuda nessa fase."],["cena","Publique em collab: as duas marcadas no mesmo post."]],
+   legenda:"[Nome da parceira] e o clubkids Sinop juntas 💛\n[dúvida da fase em uma frase e a resposta dela]\nPeça pelo app, link na bio."},
+  {dia:12, hora:"19h", tipo:"Reels", tema:"Cada fase", item:"Pikler", gravar:9,
+   tela:"esse brinquedo de madeira virou febre",
+   roteiro:[["fala","\"Esse brinquedo de madeira virou febre. Sabe por quê?\""],["cena","Pikler montado, plano aberto e detalhes."],["fala","\"O Pikler é para subir, descer e explorar. Alugando, você testa se seu filho gosta antes de pensar em comprar.\""]],
+   legenda:"Pikler para alugar em Sinop 🪵\nSubir, descer e explorar. Teste se seu filho gosta antes de pensar em comprar.\nLink na bio."},
+  {dia:14, hora:"19h", tipo:"Reels", tema:"Diversão grande", item:"Playground casinha", gravar:9,
+   tela:"imagina isso no seu quintal nas férias",
+   roteiro:[["fala","\"Imagina isso no seu quintal nas férias.\""],["cena","Playground montado, plano aberto e detalhes."],["fala","\"A gente leva, monta e busca. Você só aproveita.\""]],
+   legenda:"Playground no quintal nas férias? Em Sinop dá 🏡\nA gente leva, monta e busca. Você só aproveita.\nReserve pelo app, link na bio."},
+  {dia:17, hora:"19h", tipo:"Reels", tema:"Confiança", item:"Higienização e entrega", gravar:16,
+   tela:"todo mundo me pergunta: e a limpeza?",
+   roteiro:[["fala","\"Todo mundo me pergunta: como fica a limpeza?\""],["cena","Você higienizando um item. Item embalado. Saída para entrega (o Fleury pode aparecer aqui, se for ele que entrega)."],["fala","\"Cada item volta, é higienizado e conferido antes de ir para a próxima família.\""]],
+   legenda:"A pergunta que mais recebo: e a limpeza? 🧼\nCada item é higienizado e conferido antes de ir para a próxima família.\nPeça pelo app, link na bio."},
+  {dia:19, hora:"19h", tipo:"Reels", tema:"Natal", item:"Elétricos: Mercedes, Jeep, Can-Am", gravar:16,
+   tela:"presente de Natal que não ocupa espaço o ano todo",
+   roteiro:[["fala","\"Presente de Natal que não vai ocupar espaço o ano inteiro.\""],["cena","Mercedes, Jeep e Can-Am lado a lado. Você liga um deles."],["fala","\"Alugue o carrinho elétrico para o Natal e as férias. Depois devolve.\""]],
+   legenda:"Presente de Natal que não ocupa espaço o ano inteiro 🎄\nCarrinho elétrico infantil para alugar em Sinop no Natal e nas férias.\nReserve pelo app, link na bio."},
+  {dia:21, hora:"19h", tipo:"Reels", tema:"Brincar de casinha", item:"Cozinha de madeira", gravar:16,
+   tela:"brincar de casinha nunca sai de moda",
+   roteiro:[["fala","\"Brincar de casinha nunca sai de moda.\""],["cena","Cozinha montada com as panelinhas."],["fala","\"Cozinha de madeira para a imaginação ir longe. Dá para alugar pelo app.\""]],
+   legenda:"Brincar de casinha nunca sai de moda 🍳\nCozinha de madeira para alugar em Sinop.\nLink na bio."},
+  {dia:24, hora:"12h", tipo:"Carrossel", tema:"Natal", item:"Elétricos e playgrounds", gravar:23,
+   slides:["Capa: elétrico com laço. Texto: \"presente de Natal alugado\"","Mercedes","Jeep ou Can-Am","Playground casinha","Texto: \"reserve pelo app, link na bio\""],
+   legenda:"Presente de Natal alugado: diversão grande sem ocupar espaço o ano todo 🎁\nElétricos e playgrounds para alugar em Sinop.\nReserve pelo app, link na bio.",
+   obs:"Se a franqueadora mandar arte de Natal, ela entra no lugar deste carrossel."},
+  {dia:24, hora:"19h", tipo:"Reels", tema:"Próxima fase", item:"Gymini, Serina, Sansa", gravar:23,
+   tela:"seu bebê mudou de fase? o brinquedo também muda",
+   roteiro:[["fala","\"Seu bebê mudou de fase? O brinquedo também muda.\""],["cena","Gymini, Serina e Sansa, um corte para cada."],["fala","\"No clubkids você troca conforme ele cresce.\""]],
+   legenda:"Seu bebê mudou de fase? O brinquedo também muda 🔄\nNo clubkids Sinop você troca conforme ele cresce.\nLink na bio."},
+  {dia:26, hora:"19h", tipo:"Reels", tema:"Cliente real", item:"Item que ela alugou", gravar:23,
+   tela:"",
+   roteiro:[["cena","Com autorização: vídeo ou foto da cliente com o item em casa, e você comenta por cima."],["cena","Sem autorização: você lê uma mensagem de cliente (sem nome) e mostra o item."]],
+   legenda:"Olha quem está aproveitando o [item] em casa 💛\nObrigada pela confiança, Sinop!\nPeça o seu pelo app, link na bio."},
+  {dia:28, hora:"19h", tipo:"Reels", tema:"Natal", item:"Scooter e Toyota", gravar:23,
+   tela:"ainda dá para reservar para o Natal",
+   roteiro:[["fala","\"Esse ainda dá para reservar para o Natal.\""],["cena","Scooter e Toyota, um de cada vez."],["fala","\"Scooter e Toyota elétricos para alugar em Sinop. Reserve pelo app antes que acabe.\""]],
+   legenda:"Ainda dá para reservar para o Natal 🛴\nScooter e Toyota elétricos para alugar em Sinop.\nReserve pelo app antes que acabe, link na bio."}
+];
+POSTS.forEach((p,i) => p.id = "p"+i);
+const postsDoDia = d => POSTS.filter(p => p.dia === d);
+const postsGravar = d => POSTS.filter(p => p.gravar === d);
+const EXTRA = {
+  2:"Grave também 5 ou 6 vídeos curtos (5 a 10 segundos) para os Stories da semana: itens, embalagem, você dizendo \"bom dia, Sinop\".",
+  9:"Tire as 5 fotos do carrossel de 10/11 e combine a gravação da collab com a parceira.",
+  16:"Peça a uma cliente que alugou neste mês um vídeo ou foto do item em casa, com autorização, para o Reels de 26/11.",
+  23:"Tire as 5 fotos do carrossel de 24/11.",
+  30:"A Ivanise manda os roteiros de dezembro. Black Friday só quando a rede definir a campanha."
+};
+const MANHA = ["Um momento leve do seu domingo em Sinop.","\"Bom dia, Sinop!\" + um item da semana com a figurinha de link do app.","Vídeo curto de um item gravado no bloco + figurinha de link.","Item do Reels de ontem na mão: \"quem viu o vídeo?\"","Vídeo curto de um item gravado no bloco + figurinha de link.","Um pedido saindo para entrega.","Item do fim de semana: \"já reservou?\" + figurinha de link."];
+const NOITE = ["Você falando do que vem na semana.","Bastidor do bloco de gravação (sem mostrar o Reels antes da hora).","Compartilhe o Reels de hoje.","Bastidor: higienização ou embalagem.","Compartilhe o Reels de hoje.","Mostre 2 respostas da caixinha da semana.","Compartilhe o Reels de hoje."];
+const TARDE = [
+  {tipo:"caixinha de perguntas", textos:["como foi o fim de semana de vocês?","qual brincadeira seu filho mais pediu hoje?","o que seu filho vai pedir de Natal?","qual foi o melhor momento do fim de semana?"], depois:"Responda com carinho. Hoje não precisa vender."},
+  {tipo:"enquete", textos:["seu bebê está em qual fase?  0 a 6 meses / 6 meses a 1 ano","você compraria ou alugaria uma extratora?  compraria / alugaria","você compraria ou alugaria um carrinho elétrico?  compraria / alugaria","presente de Natal: comprar ou alugar?  comprar / alugar"], depois:"Quem respondeu recebe esta mensagem no direct:", msg:"Oi! Vi sua resposta. Qual a idade do seu pequeno? Te mostro o que temos aqui em Sinop."},
+  {tipo:"caixinha de perguntas", textos:["qual sua maior dúvida sobre alugar?","qual a idade do seu filho? te indico o brinquedo da fase","qual brinquedo seu filho não larga?","qual dúvida você tem sobre amamentação e extratora?"], depois:"Responda cada pergunta no direct, indicando um item e mandando o link do app."},
+  {tipo:"barra de emoji 😍", textos:["quanto seu bebê ia amar o Jumper?","quanto seu filho ia amar o Pikler?","quanto seu filho ia amar dirigir um elétrico?","quanto seu filho ia amar um playground no quintal?"], depois:"Quem arrastou até o fim recebe esta mensagem no direct:", msg:"Oi! Vi que seu filho ia amar. Quer que eu veja se está disponível para você?"},
+  {tipo:"quiz", textos:["o clubkids Sinop entrega em casa?  sim / não (certa: sim)","todo item é higienizado antes de cada aluguel?  sim / não (certa: sim)","o que sai mais em conta para usar só 3 meses?  comprar / alugar (certa: alugar)","dá para trocar o item quando o bebê muda de fase?  sim / não (certa: sim)"], depois:"Quem errou recebe uma mensagem gentil no direct explicando a resposta."},
+  {tipo:"caixinha de perguntas", textos:["me pergunta qualquer coisa sobre o clubkids Sinop","qual item mais te ajudou com o bebê?","qual brinquedo você comprou e seu filho usou quase nada?","o que vocês vão fazer nas férias?"], depois:"Guarde as respostas. Mostre algumas nos Stories à noite."},
+  {tipo:"enquete", textos:["seu bebê já senta sozinho?  sim / ainda não","playground ou carrinho elétrico?","vai viajar no fim do ano?  sim / não","férias em casa ou viajando?"], depois:"Quem respondeu recebe no direct o item certo para a fase do filho."}
+];
+
+const SEMANA = {
+  2:{id:"indicacao", nome:"Programa de indicação para 5 clientes que alugaram", sub:"Uma a uma, pelo WhatsApp, para quem já alugou e gostou. (10 min)"},
+  3:{id:"google", nome:"Google: post da semana + 2 fotos novas", sub:"No perfil do Google: Adicionar atualização > cole o texto abaixo > coloque uma foto ou trecho do Reels > botão com o link do app. Depois suba 2 fotos reais do bloco de gravação. (10 min)"},
+  5:{id:"reativar", nome:"Renovação e reativação no WhatsApp", sub:"No máximo 15 mensagens, uma a uma. (15 min)"}
+};
+const MSG_REATIVAR = `Oi, [nome]! Aqui é a Joice, do clubkids Sinop. Seu bebê já deve estar em uma fase nova, né? Agora ele vai amar o [Gymini / Jumper / Serina]. Se quiser, te mando as fotos. Pedido pelo app: ${LINK_APP}`;
+const MSG_RENOVAR = "Oi, [nome]! Aqui é a Joice, do clubkids Sinop. O aluguel do [item] vence em 3 dias. Quer renovar ou prefere trocar pelo item da próxima fase? Eu te ajudo a escolher.";
+const MSG_POSVENDA = "Oi, [nome]! Aqui é a Joice, do clubkids Sinop. Já faz uns dias que o [item] chegou: está tudo certinho? Seu pequeno está se adaptando? Se precisar trocar por outro item, ainda dá tempo, é só me falar.";
+const MSG_AVALIAR = "Que bom que está tudo certo! 💛 Duas coisinhas que ajudam muito outras mães de Sinop:\n1) Se puder, conta como está sendo no Google, leva 1 minutinho: [link de avaliação do Google]\n2) Se quiser, me manda uma foto ou vídeo do seu pequeno usando o [item]. Com a sua autorização, posso mostrar no nosso Instagram.";
+const MSG_PROBLEMA = "Poxa, obrigada por me contar! Vamos resolver: [solução ou troca]. Como ainda está no prazo, dá para trocar por outro item, se preferir.";
+/* posts do Google: toda quarta */
+const GPOST = {
+  4:{tema:"Apresentação + extratora", botao:"Pedir on-line (link do app)", texto:"Oi, Sinop! Sou a Joice e cuido do clubkids aqui na cidade. Alugamos brinquedos e itens para bebês e crianças de 0 a 6 anos, como a extratora de leite, o item mais pedido em Sinop. Tudo higienizado, com entrega e retirada. Peça pelo app."},
+  11:{tema:"Do zero aos 6 meses", botao:"Saiba mais (link do app)", texto:"Do zero aos 6 meses: o que vale alugar em vez de comprar em Sinop. Extratora de leite, balanço, tapete de atividades e berço, itens que o bebê usa por poucos meses. Higienizados e entregues na sua casa."},
+  18:{tema:"Higienização e entrega", botao:"Ligar ou WhatsApp", texto:"Como funciona o aluguel no clubkids Sinop: cada item volta, é higienizado e conferido antes de ir para a próxima família. A gente entrega e retira em Sinop. Fale com a Joice no WhatsApp."},
+  25:{tema:"Elétricos e playgrounds para o Natal", botao:"Pedir on-line (link do app)", texto:"Presente de Natal que não ocupa espaço o ano inteiro: aluguel de carrinho elétrico infantil e playground em Sinop para o Natal e as férias. Reserve pelo app."}
+};
+
+const ANTES = [
+  {id:"dia", t:"Escolher o dia fixo do bloco de gravação", d:"O plano usa segunda-feira, 1h a 1h30. Se for outro dia, avise a Ivanise."},
+  {id:"fleury", t:"Confirmar se o Fleury vai fazer entregas e retiradas", d:"Se sim, ele pode aparecer nos bastidores. A cara da unidade continua sendo você."},
+  {id:"google", t:"Dar acesso do Google Meu Negócio à Ivanise", d:"Perfil da empresa > Menu > Pessoas e acesso > Adicionar > supervisao@franquiasclubkids.com.br > Administrador. Nada é alterado sem você aprovar."},
+  {id:"fotosgoogle", t:"Tirar e subir 12 fotos reais no Google", d:"A lista está na aba guia. Só fotos reais, boa luz, sem texto e sem arte."},
+  {id:"linkavaliacao", t:"Pegar o link de avaliações do Google", d:"No perfil: Pedir avaliações > copiar link. Salve como resposta rápida /avaliar no WhatsApp."},
+  {id:"catalogo", t:"Montar o catálogo do WhatsApp Business", d:"Foto real, descrição curta e link do item no app. Sem preço."},
+  {id:"saudacao", t:"Ativar as mensagens automáticas do WhatsApp", d:"Saudação e ausência. Os textos estão na aba guia."},
+  {id:"psico", t:"Decidir como citar sua formação em psicologia", d:"O CFP tem regras sobre usar o título em publicidade. Falar como mãe e franqueada que entende de infância é o caminho mais seguro."},
+  {id:"parceria", t:"Chamar uma parceira para a collab de 10/11", d:"Consultora de amamentação, fotógrafa newborn ou @danidomingosdebrito."}
+];
+
+/* ===== plano de comunicação (resumo prático) ===== */
+const METAS = [
+  ["Faturamento por mês","~R$ 1,7 mil","R$ 3 mil"],["Pedidos por semana","1,4","3"],["Produtos diferentes alugados","9 de 29","18 de 29"],
+  ["Estoque alugado","18%","35%"],["Clientes que voltam","1","5"],["Avaliações no Google","0","15"],["Posts no feed","0","3 por semana"],["Seguidores","1.053","1.600"]
+];
+const CHECK = {
+  reuniao:{tit:"Combinados da reunião de gestão de 22/10", itens:[
+    ["trafego","Direcionar uma campanha do tráfego pago para o WhatsApp","Objetivo: volume de leads para o atendimento. Detalhes no menu guia."],
+    ["editorial","Usar o editorial para gravar mais vídeos e ficar mais presente no Instagram","Bloco de segunda + ideias de pauta da linha editorial."],
+    ["consultora","Continuar a parceria com a consultora materna","Pelo menos 1 conteúdo juntas por mês."],
+    ["novasparc","Buscar novas parcerias para divulgar os brinquedos parados","Emprestar um item do Giro em troca de vídeo em collab."],
+    ["girostories","Divulgar os brinquedos do Giro nos Stories","Segunda, quarta e sexta tem Story do Giro pronto na aba fazer hoje."],
+    ["indicacao","Divulgar o programa de indicação para quem já alugou","Toda terça, 5 clientes. Mensagem pronta na aba fazer hoje."],
+    ["prospec","Prospectar clientes frias no Instagram","Seguidoras do perfil e de perfis de influencers e mães de Sinop. Até 15 mensagens por dia, personalizadas. Como fazer no guia."],
+    ["tres","Escolher 3 ações por dia e executar","Na aba fazer hoje, em \"minhas 3 ações\"."]]},
+  trafego:{tit:"Tráfego pago para o WhatsApp", itens:[
+    ["verba","Definir verba e período com a Ivanise",""],
+    ["campanha","Campanha com objetivo de mensagens no WhatsApp","Público: Sinop, dentro da área de entrega, mães e gestantes. Criativo: o Reels com mais visualizações."],
+    ["etiqueta","Etiqueta \"lead anúncio\" no WhatsApp","Para contar quantos leads vieram e quantos alugaram."],
+    ["resposta","Responder todo lead em até 1 hora","Lead que espera esfria. Saudação automática ativa."],
+    ["semanal","Toda segunda: conversas, custo por conversa e pedidos do anúncio","Anotar nos indicadores da semana."]]},
+  google:{tit:"Google Meu Negócio", itens:[
+    ["acesso","Acesso de administradora para a Ivanise","Pessoas e acesso > supervisao@franquiasclubkids.com.br"],
+    ["nome","Nome: clubkids Sinop","Sem palavra-chave no nome."],
+    ["categoria","Categoria principal de aluguel","Secundárias: loja de brinquedos e loja de artigos para bebês. Hoje só aparece \"loja de brinquedos\"."],
+    ["site","Site: link do app",""],["whats","Botão de WhatsApp e Instagram @clubkidssinop",""],
+    ["descricao","Descrição com palavras-chave","Texto pronto na aba guia."],
+    ["feriados","Horários de Natal, Ano Novo e feriados",""],
+    ["produtos","Produtos: extratora, elétricos, playground, Pikler, Jumper, berço","Foto real e link do app, sem preço."],
+    ["fotos","12 fotos reais na primeira semana","Depois 2 por semana, toda quarta."],
+    ["avaliacoes","5 avaliações em 30 dias, 15 em 90","No pós-venda antes da metade do plano (8º ao 10º dia num plano de 30), depois de confirmar que está tudo bem, junto com o pedido de prova social."]]},
+  whats:{tit:"WhatsApp Business", itens:[
+    ["perfil","Perfil comercial completo","Logo, descrição, endereço, horário, link do app e do Instagram."],
+    ["catalogo","Catálogo sem preço, com link do app em cada item","Começar pelos 10 que mais giram e pelos do Giro."],
+    ["saudacao","Mensagem de saudação",""],["ausencia","Mensagem de ausência",""],
+    ["rapidas","Respostas rápidas: /renovar, /fase, /avaliar, /app, /entrega",""],
+    ["etiquetas","Etiquetas: novo contato, pedido feito, aluguel ativo, renovar, cliente antiga",""],
+    ["reativar8","Reativar as 8 mães da extratora","No máximo 15 mensagens por dia, uma a uma."]]},
+  parcerias:{tit:"Parcerias (2 collabs por mês)", itens:[
+    ["dani","@danidomingosdebrito","Repetir collab em novembro."],["m1lgrau","@sinopm1lgrau","Collab com elétricos para o Natal."],
+    ["amamentacao","Consultora de amamentação","Vídeo de dúvidas + extratora."],["medicos","Obstetras e pediatras","Deixar link do app e QR do Google."],
+    ["newborn","Fotógrafa newborn","Item emprestado para ensaio em troca de crédito e collab."]]}
+};
+const IND = [["reels","Reels publicados"],["seguidores","Seguidores"],["pedidos","Pedidos"],["avaliacoes","Avaliações no Google (total)"],["conversas","Conversas novas no WhatsApp"]];
+
+/* ===== linha editorial ===== */
+const EDITORIAL = [
+  {nome:"Cada fase do bebê", base:"35%", nov:"4 de 14", obj:"Mostrar o item certo para cada idade e girar o estoque parado (itens do Giro).", formato:"Reels de demonstração com a Joice; carrossel de fotos reais.", cta:"Qual a fase do seu? Me chama que eu indico.",
+   pautas:["5 sinais de que o bebê está pronto para o Pikler","O que muda dos 6 aos 12 meses e o que vale alugar","Berço ou cercadinho: quando trocar","Brinquedos para o bebê que começa a engatinhar","Gymini, Sansa e Serina: para que idade serve cada um"]},
+  {nome:"Amamentação e primeiros meses", base:"20%", nov:"2 de 14", obj:"Porta de entrada: a extratora é o item que mais vende. Falar com gestantes e mães de recém-nascido.", formato:"Reels com a Joice; collab com consultora de amamentação.", cta:"Alugue pelo app, link na bio.",
+   pautas:["O que levar para a maternidade e o que dá para alugar","Extratora: as dúvidas mais comuns (com consultora)","Enxoval inteligente: comprar ou alugar","Primeira semana em casa: itens que ajudam"]},
+  {nome:"Diversão e datas", base:"20%", nov:"5 de 14 (Natal)", obj:"Gerar desejo e pedidos de valor maior: Natal, férias, aniversário, fim de semana.", formato:"Reels com o item montado; carrossel de fotos reais.", cta:"Reserve pelo app antes que acabe.",
+   pautas:["Férias em casa: 3 brinquedos que ocupam a tarde toda","Aniversário em casa com playground alugado","Presente de Natal alugado","Dia de chuva em Sinop: brincadeiras dentro de casa"]},
+  {nome:"Confiança e prova social", base:"15%", nov:"2 de 14", obj:"Tirar o medo de alugar: higiene, segurança, entrega e clientes reais.", formato:"Bastidor em Reels; foto ou vídeo de cliente com autorização; avaliação nos Stories.", cta:"Me chama no WhatsApp para tirar dúvidas.",
+   pautas:["Como funciona o aluguel em 4 passos","A pergunta que mais recebo","Cliente real do mês","Avaliação da semana nos Stories"]},
+  {nome:"A Joice e a unidade", base:"10%", nov:"1 de 14 (+ Stories)", obj:"Conexão: a Joice como rosto do clubkids em Sinop.", formato:"Principalmente Stories; 1 Reels por mês.", cta:"Me segue e me chama no direct.",
+   pautas:["Por que trouxe o clubkids para Sinop","Um dia na unidade","Respondendo perguntas da caixinha"]}
+];
+const ED_DE = {"Apresentação":"A Joice e a unidade","Amamentação":"Amamentação e primeiros meses","Parceria":"Amamentação e primeiros meses","Cada fase":"Cada fase do bebê","Próxima fase":"Cada fase do bebê","Diversão grande":"Diversão e datas","Natal":"Diversão e datas","Brincar de casinha":"Diversão e datas","Confiança":"Confiança e prova social","Cliente real":"Confiança e prova social"};
+function editorialHtml(){
+  return `<section class="cartao"><h2>linha editorial</h2>
+    <p class="info">Todo post entra em uma destas 5 editorias. A porcentagem é o peso num mês normal; em novembro, Natal puxa "diversão e datas" para cima.</p>
+    <table class="tabela"><thead><tr><th>editoria</th><th>mês normal</th><th>novembro</th></tr></thead><tbody>${EDITORIAL.map(e => `<tr><td><b>${e.nome}</b></td><td>${e.base}</td><td>${e.nov}</td></tr>`).join("")}</tbody></table>
+    ${EDITORIAL.map(e => `<details class="item dentro"><summary><span class="resumo-post"><b>${e.nome}</b><span>${e.base} dos posts</span></span></summary>
+      <dl class="ficha"><dt>objetivo</dt><dd>${e.obj}</dd><dt>formato</dt><dd>${e.formato}</dd><dt>chamada</dt><dd>${e.cta}</dd></dl>
+      <p class="info" style="margin:10px 0 4px">ideias de pauta para dezembro e janeiro</p><ul style="margin:0;padding-left:22px">${e.pautas.map(x => `<li>${x}</li>`).join("")}</ul></details>`).join("")}
+    <table class="tabela"><tbody>
+      <tr><td><b>Ofertas</b></td><td>Não é editoria fixa. Só campanhas da rede, no máximo 1 a cada 5 posts, com prazo da campanha e "promoções não acumulativas". Giro: "preço especial no site".</td></tr>
+      <tr><td><b>Stories</b></td><td>Manhã mostra um item; tarde conversa (enquete, caixinha, quiz); noite bastidor ou compartilha o post.</td></tr>
+      <tr><td><b>Tom de voz</b></td><td>A Joice fala em primeira pessoa, próxima e leve, como mãe de Sinop que entende de infância. Frases curtas, sempre citando Sinop.</td></tr>
+      <tr><td><b>Nunca usar</b></td><td>"brinquedo parado", "queima de estoque", porcentagem de desconto, prazo de entrega em campanha, "ClubKids" ou "CLUBKIDS".</td></tr></tbody></table></section>`;
+}
+
+/* ===== ações do dia (reunião 22/10) ===== */
+const PASTA_INDICA = "https://drive.google.com/drive/folders/1lMU8b-9ZQGVGfbmcLeuOtybLM1ipQyYt";
+const MSG_INDICA = "Oi, [nome]! Aqui é a Joice, do clubkids Sinop. Que bom que você gostou do aluguel! Sabia que você pode indicar amigas e ganhar [benefício do Indique e Ganhe]? É só ela alugar e dizer que foi indicação sua. Quer que eu te mande um texto pronto para encaminhar?";
+const MSG_PROSPEC = "Oi, [nome]! Tudo bem? Sou a Joice, do clubkids aqui de Sinop. Vi que você [tem um bebê / está esperando / curtiu nosso post sobre X]. A gente aluga brinquedos e itens para cada fase, higienizados e com entrega. Posso te mostrar o que combina com a fase do seu pequeno?";
+const MSG_PARCERIA = "Oi, [nome]! Sou a Joice, do clubkids Sinop. Adoro seu conteúdo sobre [tema]. A gente aluga brinquedos e itens para bebês e crianças e eu queria te emprestar o [item] para você e seu pequeno usarem por [período]. Se gostarem, a gente faz um vídeo em collab. Topa conversar?";
+const ACOES = {
+  leads:{n:"Responder todos os leads do anúncio no WhatsApp", dica:"Em até 1 hora. Pergunte a idade do pequeno e indique o item. Etiqueta \"lead anúncio\"."},
+  prospec:{n:"Prospectar 10 seguidoras do perfil", dica:"Quem segue e nunca alugou. Primeiro curta 2 posts e responda um Story dela; depois mande a mensagem, personalizada. Nada de link na primeira mensagem.", msg:MSG_PROSPEC},
+  influ:{n:"Prospectar 10 seguidoras de um perfil de mãe ou influencer de Sinop", dica:"Abra os seguidores ou os comentários do perfil, escolha mães e gestantes de Sinop, interaja antes e mande a mensagem personalizada. Até 15 por dia.", msg:MSG_PROSPEC},
+  indic:{n:"Programa de indicação para 5 clientes que alugaram", dica:"Só para quem gostou do aluguel. Uma a uma.", msg:MSG_INDICA},
+  giro:{n:"Story extra de um item do Giro", dica:"Vídeo de 10 segundos, \"preço especial no site\", link do item. Nunca porcentagem.", msg:"achadinho da semana: [item do Giro] com preço especial no site 💛 toca no link. promoções não acumulativas"},
+  video:{n:"Gravar 1 vídeo extra do editorial", dica:"Escolha uma ideia de pauta na linha editorial (aba plano). 15 a 30 segundos, com você."},
+  parceria:{n:"Chamar 1 parceira nova para divulgar itens parados", dica:"Fotógrafa newborn, consultora, mãe com bom alcance em Sinop. Ofereça um item do Giro emprestado em troca de collab.", msg:MSG_PARCERIA},
+  consultora:{n:"Combinar o próximo conteúdo com a consultora materna", dica:"Tema, data de gravação e qual item entra."},
+  posvenda:{n:"Pós-venda: clientes no 8º ao 10º dia do plano", dica:"Está tudo em ordem? Se sim, avaliação no Google e prova social."},
+  reativ:{n:"Reativar 5 clientes antigas com o item da próxima fase", dica:"Uma a uma, com o nome dela."},
+  google:{n:"Responder avaliações e subir 2 fotos no Google", dica:"Citando o item e Sinop."}
+};
+
+/* ===== pasta dos franqueados (Drive da rede) ===== */
+const PASTA = "https://drive.google.com/drive/folders/1jMOl-jPh-g8eMS0BndIOmAsop1fGgqRy";
+const SUB = {
+  prova:["Prova social","https://drive.google.com/drive/folders/1baZt1GhYjxcSZT-JT0y1qNVI6wIb-Aca"],
+  sobre:["Sobre o clubkids","https://drive.google.com/drive/folders/1Ws-mUJp8qVelx2I5ypN8nmGCteuIGwEV"],
+  enxoval:["Como economizar no enxoval","https://drive.google.com/drive/folders/1qqX0JQzxMKM9RHn7euS0uefVo8_Z1GCA"],
+  jumperoo:["Jumperoo","https://drive.google.com/drive/folders/1hm6FAIZ654K1IYVIQFqGCFBlXGXbg_tV"],
+  viagem:["Viagem","https://drive.google.com/drive/folders/1utcPONzFoEGlaNdTry2XRmnvyzmsPqeq"]
+};
+const SUB_POST = {"Apresentação":"sobre","Amamentação":"enxoval","Parceria":"enxoval","Cada fase":"jumperoo","Próxima fase":"sobre","Diversão grande":"sobre","Natal":"sobre","Brincar de casinha":"sobre","Confiança":"sobre","Cliente real":"prova"};
+function pastaHtml(chave, dica){
+  const s = SUB[chave];
+  return `<details class="obs"><summary>plano B, só se não der para gravar: pasta dos franqueados</summary><div class="copiar" style="margin-top:8px">
+    <p><b>O melhor é sempre você gravar.</b> Vídeo seu, com os itens de Sinop, gera mais confiança, mais alcance e mais pedidos. Use a pasta só quando não tiver jeito.</p>
+    <p style="font-weight:500">${dica || "Escolha um vídeo ou foto, poste e escreva o texto acima por cima."} Se o vídeo for de outra unidade, não diga que é de Sinop.</p>
+    <div class="linha-btn">${s?`<a class="btn contorno" style="text-align:center;text-decoration:none;display:grid;place-items:center" href="${s[1]}" target="_blank" rel="noopener">pasta ${s[0]}</a>`:""}<a class="btn contorno" style="text-align:center;text-decoration:none;display:grid;place-items:center" href="${PASTA}" target="_blank" rel="noopener">todas as fotos e vídeos</a></div></div></details>`;
+}
+
+/* ===== Stories do dia: formato, editoria, intenção, o que postar, texto pronto ===== */
+const ITEM_SEM = [["extratora de leite","Jumper"],["Pikler","playground casinha"],["carrinho elétrico","cozinha de madeira"],["Gymini","scooter elétrico"]];
+function storiesDoDia(d){
+  const sem = new Date(ANO,MES,d).getDay(), w = Math.min(3, Math.floor((d-1)/7));
+  const [A,B] = ITEM_SEM[w], T = TARDE[sem], ps = postsDoDia(d);
+  const MAN = [
+    {formato:"Foto", ed:"A Joice e a unidade", dur:"", int:"Conexão: mostrar que tem gente de verdade por trás da marca.", oque:"Uma foto leve do seu domingo: café, passeio, pôr do sol de Sinop.", copy:"domingo em Sinop ☀️ boa semana pra vocês!", fig:"Nenhuma ou música", pasta:null},
+    {formato:"Vídeo curto", ed:"Cada fase do bebê", dur:"10 segundos", int:"Mostrar o item da semana e levar para o app.", oque:`Item da semana (${A}) girando, funcionando ou sendo montado. Use os vídeos curtos do bloco.`, copy:`o queridinho da semana: ${A} 💛 toca no link e reserva`, fig:"Link do app", pasta:"jumperoo"},
+    {formato:"Vídeo curto", ed:"Cada fase do bebê", dur:"10 a 15 segundos", int:"Gerar desejo mostrando um detalhe que a foto não mostra.", oque:`Close num detalhe (${B}): um botão, um som, uma peça.`, copy:`olha esse detalhe 😍 ${B} para alugar em Sinop`, fig:"Link do app", pasta:null},
+    {formato:"Foto do item", ed:"Amamentação e primeiros meses", dur:"", int:"Lembrar que a unidade existe logo cedo e puxar conversa.", oque:`Foto real com boa luz: ${A}.`, copy:`bom dia, Sinop! quem aí está precisando de ${A}?`, fig:"Link do app", pasta:"enxoval"},
+    {formato:"Vídeo curto", ed:"Diversão e datas", dur:"5 a 10 segundos", int:"Criar expectativa para o Reels da noite.", oque:"Um pedacinho do item do Reels de hoje, sem mostrar tudo.", copy:"hoje às 19h tem vídeo novo 👀 ativa o lembrete", fig:"Contagem regressiva para as 19h", pasta:null},
+    {formato:"Vídeo curto", ed:"Confiança e prova social", dur:"10 segundos", int:"Mostrar que a unidade está viva e entregando.", oque:"Um pedido embalado saindo para entrega (sem mostrar endereço ou nome da cliente).", copy:"mais um pedido saindo para uma família de Sinop 🚗💛", fig:"Localização: Sinop", pasta:"prova"},
+    {formato:"Vídeo curto", ed:"Diversão e datas", dur:"10 segundos", int:"Puxar reserva para o fim de semana.", oque:`Item montado, plano aberto: ${B}.`, copy:`fim de semana pede ${B}. já reservou?`, fig:"Link do app", pasta:null}
+  ];
+  const [perg, ops] = T.textos[w].split("  ");
+  const outras = T.textos.filter((_,i) => i!==w).map(x => x.split("  ")[0]);
+  const tarde = {formato:T.tipo.charAt(0).toUpperCase()+T.tipo.slice(1), ed:"Conversa (engajamento)", dur:"", int:"Fazer a seguidora responder: quem responde passa a ver mais seus Stories e vira conversa no direct.",
+    oque:"Fundo: sua selfie ou foto de um item. Coloque a figurinha com a pergunta abaixo.", copy:perg, ops:ops||"", outras, fig:T.tipo, depois:T.depois+(T.msg?` "${T.msg}"`:""), pasta:null};
+  let noite;
+  if (ps.length){
+    const p = ps[ps.length-1];
+    noite = {formato:"Compartilhar o post", ed:ED_DE[p.tema]||p.tema, dur:"", int:"Levar quem vê Stories para o post novo: mais alcance para o Reels.", oque:`Compartilhe o ${p.tipo} de hoje (${p.item}) nos Stories pelo aviãozinho.`, copy:`saiu! ${p.item} 👉 toca aqui para ver`, fig:"O post já vai com link automático", pasta:null};
+  } else {
+    const NOI = {
+      0:{formato:"Vídeo falando", ed:"A Joice e a unidade", dur:"15 a 20 segundos", int:"Conexão e expectativa para a semana.", oque:`Você falando para a câmera: "Oi, gente! Essa semana vou mostrar ${A} e ${B}. Fica de olho!"`, copy:"o que vem essa semana no clubkids Sinop 👀", fig:"Enquete: qual você quer ver primeiro?", pasta:null},
+      1:{formato:"Vídeo de bastidor", ed:"A Joice e a unidade", dur:"10 segundos", int:"Mostrar o bastidor e criar curiosidade.", oque:"Celular no tripé, itens arrumados, você se preparando para gravar (não mostre o Reels antes da hora).", copy:"gravando os vídeos da semana 🎬 adivinha o que vem aí?", fig:"Caixinha: chuta o que vem aí", pasta:null},
+      3:{formato:"Vídeo de bastidor", ed:"Confiança e prova social", dur:"10 a 15 segundos", int:"Tirar o medo de alugar: mostrar a higienização.", oque:"Suas mãos higienizando e conferindo um item.", copy:"aqui tudo volta higienizado e conferido antes de ir para a próxima família 🧼", fig:"Nenhuma", pasta:null},
+      5:{formato:"Print + texto", ed:"Confiança e prova social", dur:"", int:"Mostrar que você responde e que outras mães confiam.", oque:"Print de 2 respostas da caixinha da semana (sem nome) ou de uma avaliação do Google, com a sua resposta.", copy:"respondendo vocês 💬", fig:"Caixinha: manda sua dúvida", pasta:"prova"}
+    };
+    noite = NOI[sem] || NOI[3];
+  }
+  const lista = [["manha","De manhã",MAN[sem]],["tarde","À tarde",tarde],["noite","À noite",noite]];
+  if ([1,3,5].includes(sem)){
+    const G = w===0 ? "Jumper Joyful" : "[item do Giro da semana]";
+    lista.splice(1,0,["giro","Giro",{formato:"Vídeo curto ou foto", ed:"Cada fase do bebê", dur:"10 segundos", int:"Girar os brinquedos parados: mostrar um item do Giro com preço especial no site.", oque: w===0 ? "O Jumper Joyful funcionando." : "Um item do Giro Inteligente que está com preço especial no site (confira a lista no sistema).", copy:`achadinho da semana: ${G} com preço especial no site 💛 toca no link. promoções não acumulativas`, fig:"Link do item no app", pasta: w===0 ? "jumperoo" : null}]);
+  }
+  return lista;
+}
+function storyHtml(s){
+  return `<div class="post-topo"><span class="etiqueta lar">${esc(s.formato)}</span><span class="etiqueta az">${esc(s.ed)}</span>${s.dur?`<span class="etiqueta">${esc(s.dur)}</span>`:""}</div>
+    <dl class="ficha"><dt>intenção</dt><dd>${esc(s.int)}</dd><dt>o que postar</dt><dd>${esc(s.oque)}</dd><dt>figurinha</dt><dd>${esc(s.fig)}</dd></dl>
+    ${caixaCopiar(s.copy, s.ops!==undefined ? "pergunta da figurinha" : "texto para escrever no Story")}
+    ${s.ops ? `<p class="info" style="margin:0"><b>Opções de resposta:</b> ${esc(s.ops)}</p>` : ""}
+    ${s.outras ? `<p class="info" style="margin:0"><b>Outras perguntas que servem:</b> ${s.outras.map(esc).join(" · ")}</p>` : ""}
+    ${s.depois ? `<p class="info" style="margin:0"><b>Depois:</b> ${esc(s.depois)}</p>` : ""}
+    ${s.pasta ? pastaHtml(s.pasta) : ""}`;
+}
+
+/* ===== estado salvo neste celular ===== */
+const CHAVE = "tarefas-joice-sinop";
+let dados = {};
+try { dados = JSON.parse(localStorage.getItem(CHAVE) || "{}") || {}; } catch(e) { dados = {}; }
+for (const k in dados){ if (dados[k] === true) dados[k] = {s:"feito"}; }
+if (!dados._ind) dados._ind = {};
+function salvar(){ try { localStorage.setItem(CHAVE, JSON.stringify(dados)); } catch(e) {} agendarSync(); }
+const st = id => (dados[id] && typeof dados[id]==="object" && dados[id].s) || "inicio";
+const obs = id => (dados[id] && dados[id].o) || "";
+const STATUS = [["inicio","início"],["andamento","em andamento"],["feito","feito"],["nao","não concluído"]];
+const NOME_ST = Object.fromEntries(STATUS);
+
+const app = document.getElementById("app");
+const pad = n => String(n).padStart(2,"0");
+const ddmm = d => `${pad(d)}/11`;
+const hojeReal = new Date();
+const ehHoje = d => hojeReal.getFullYear()===ANO && hojeReal.getMonth()===MES && hojeReal.getDate()===d;
+let aba = ["hoje","crono","plano","guia","reuniao"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "hoje";
+let diaSel = (hojeReal.getFullYear()===ANO && hojeReal.getMonth()===MES) ? hojeReal.getDate() : (hojeReal < new Date(ANO,MES,1) ? 0 : 30);
+
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),1800)}
+async function copiar(txt, msg){
+  try { await navigator.clipboard.writeText(txt); toast(msg || "copiado"); }
+  catch(e){ const a=document.createElement("textarea"); a.value=txt; a.setAttribute("readonly",""); document.body.appendChild(a); a.select(); try{document.execCommand("copy"); toast(msg || "copiado");}catch(_){toast("segure o texto para copiar");} a.remove(); }
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const waLink = txt => "https://wa.me/?text=" + encodeURIComponent(txt);
+const dataLonga = d => `${DIAS_SEM[new Date(ANO,MES,d).getDay()]}, ${ddmm(d)}`;
+const legendaCompleta = p => p.legenda + "\n\n" + TAGS;
+
+/* ===== tarefas do dia ===== */
+function tarefasDoDia(d){
+  if (d === 0) return ANTES.map(a => ({id:"antes-"+a.id, nome:a.t}));
+  const sem = new Date(ANO,MES,d).getDay(), l = [];
+  postsGravar(d).forEach(p => { l.push({id:`${p.id}-gravado`, nome:`Gravar ${p.tipo}: ${p.item}`}); l.push({id:`${p.id}-agendado`, nome:`Agendar ${p.tipo}: ${p.item} (${ddmm(p.dia)}, ${p.hora})`}); });
+  if (EXTRA[d]) l.push({id:`${d}-extra`, nome:"Extra do bloco de gravação"});
+  postsDoDia(d).forEach(p => l.push({id:`${p.id}-publicado`, nome:`Conferir se saiu e compartilhar: ${p.tipo} ${p.item}`}));
+  l.push({id:`${d}-manha`, nome:"Story da manhã"},{id:`${d}-tarde`, nome:"Story da tarde ("+TARDE[sem].tipo+")"},{id:`${d}-noite`, nome:"Story da noite"},{id:`${d}-status`, nome:"Stories no Status do WhatsApp"});
+  if ([1,3,5].includes(sem)) l.push({id:`${d}-giro`, nome:"Story do Giro"});
+  [0,1,2].forEach(i => { const c = (dados[`${d}-a${i}`]||{}).c; if (c && ACOES[c]) l.push({id:`${d}-a${i}`, nome:"Ação do dia: "+ACOES[c].n}); });
+  if (SEMANA[sem]) l.push({id:`${d}-${SEMANA[sem].id}`, nome:SEMANA[sem].nome});
+  l.push({id:`${d}-msgs`, nome:"Responder Direct, comentários e WhatsApp"},{id:`${d}-avaliacao`, nome:"Pós-venda do 8º ao 10º dia: está tudo bem? Se sim, avaliação no Google e prova social"});
+  return l;
+}
+const contagem = d => { const l = tarefasDoDia(d); return [l.filter(t => st(t.id)==="feito").length, l.length]; };
+
+/* ===== componentes ===== */
+function tk(id, titulo, sub, extra){
+  const s = st(id), o = obs(id);
+  return `<div class="tk" data-id="${esc(id)}" data-s="${s}">
+    <div class="tk-tit"><b>${titulo}</b>${sub?`<span>${sub}</span>`:""}</div>${extra||""}
+    <div class="seg" role="group" aria-label="status">${STATUS.map(([v,n]) => `<button type="button" data-st="${esc(id)}" data-v="${v}" aria-pressed="${s===v}">${n}</button>`).join("")}</div>
+    <details class="obs"${o||s==="nao"?" open":""}><summary>observação${o?" ✎":""}</summary><textarea data-obs="${esc(id)}" placeholder="${s==="nao"?"por que não concluiu? o que falta?":"anote o que precisar"}">${esc(o)}</textarea></details>
+  </div>`;
+}
+function caixaCopiar(texto, rotulo, comWa){
+  return `<div class="copiar"><small>${rotulo}</small><p style="white-space:pre-line">${esc(texto)}</p>
+    <div class="linha-btn"><button type="button" class="btn contorno" data-copiar="${esc(texto)}">copiar</button>${comWa?`<a class="btn wa" href="${waLink(texto)}" target="_blank" rel="noopener">abrir no WhatsApp</a>`:""}</div></div>`;
+}
+function conteudoPost(p){
+  const etq = p.tipo.startsWith("Carrossel") ? "am" : "lar";
+  return `<div class="post">
+    <div class="post-topo"><span class="etiqueta ${etq}">${esc(p.tipo)}</span><span class="etiqueta az">${esc(ED_DE[p.tema]||p.tema)}</span><span class="etiqueta">${esc(p.tema)}</span></div>
+    <h3>${esc(p.item)}</h3>
+    <dl class="ficha"><dt>posta</dt><dd>${dataLonga(p.dia)}, ${p.hora}</dd><dt>grava</dt><dd>${dataLonga(p.gravar)}</dd><dt>formato</dt><dd>${p.tipo.startsWith("Carrossel") ? "5 fotos reais, sem arte" : "vertical, 15 a 30 s, com você"}</dd></dl>
+    ${p.tela ? caixaCopiar(p.tela, "texto na tela nos 2 primeiros segundos (e capa)") : ""}
+    ${p.roteiro ? `<div><small class="info">roteiro</small><ol class="roteiro">${p.roteiro.map(([k,t]) => `<li class="${k}">${esc(t)}</li>`).join("")}</ol></div>` : ""}
+    ${p.slides ? `<div><small class="info">fotos, na ordem</small><ol class="slides">${p.slides.map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>` : ""}
+    ${caixaCopiar(legendaCompleta(p), "legenda com hashtags")}
+    ${p.obs ? `<p class="info">${esc(p.obs)}</p>` : ""}
+    ${pastaHtml(SUB_POST[p.tema], p.tipo.startsWith("Carrossel") ? "Faltou foto de algum item? Procure na pasta e use só fotos reais." : "Se não der para gravar, use um vídeo do item da pasta e grave só a sua fala, ou narre por cima.")}
+  </div>`;
+}
+function chipPost(p){
+  const s = st(p.id+"-publicado")!=="inicio" ? ["publicado",st(p.id+"-publicado")] : st(p.id+"-agendado")!=="inicio" ? ["agendado",st(p.id+"-agendado")] : st(p.id+"-gravado")!=="inicio" ? ["gravado",st(p.id+"-gravado")] : null;
+  return s ? `<span class="chip ${s[1]}">${s[0]}: ${NOME_ST[s[1]]}</span>` : `<span class="chip">a gravar</span>`;
+}
+
+function cabecalhoDia(d){
+  const titulo = d === 0 ? "antes de começar" : dataLonga(d);
+  const sub = d === 0 ? "até sábado, 31/10" : (ehHoje(d) ? "hoje" : "novembro");
+  const [f,t] = contagem(d);
+  return `<div class="dia">
+      <button type="button" class="seta" data-ir="-1" aria-label="dia anterior" ${d===0?"disabled":""}>‹</button>
+      <h1>${titulo}<small>${sub}</small></h1>
+      <button type="button" class="seta" data-ir="1" aria-label="próximo dia" ${d===30?"disabled":""}>›</button>
+    </div>
+    <div class="progresso"><div class="trilho" role="img" aria-label="${f} de ${t} feitas"><i id="barra" style="width:${t?f/t*100:0}%"></i></div><span id="contador">${f} de ${t}</span></div>`;
+}
+
+function viewHoje(){
+  const d = diaSel;
+  let html = cabecalhoDia(d);
+  if (d === 0){
+    html += `<section class="cartao"><h2>preparação</h2><p class="info">O plano começa no domingo, 01/11. Até lá, só isto:</p>${ANTES.map(a => tk("antes-"+a.id, a.t, a.d)).join("")}</section>`;
+  } else {
+    const sem = new Date(ANO,MES,d).getDay(), w = Math.min(3, Math.floor((d-1)/7)), T = TARDE[sem];
+    const grav = postsGravar(d);
+    html += `<p class="info" style="margin:0;text-align:center">${grav.length || EXTRA[d] ? "dia de gravar: cerca de 1h30 hoje" : "hoje: cerca de 15 minutos"}</p>`;
+    postsDoDia(d).forEach(p => {
+      html += `<section class="cartao"><h2><span class="etiqueta lar">sai hoje no feed, ${p.hora}</span></h2>${conteudoPost(p)}
+        ${tk(`${p.id}-publicado`, "Conferir se saiu e compartilhar nos Stories", "Se não saiu, publique agora com a legenda acima.")}</section>`;
+    });
+    if (grav.length || EXTRA[d]){
+      html += `<section class="cartao"><h2><span class="etiqueta az">bloco de gravação</span></h2>
+        <p class="info">Grave tudo de uma vez, com a mesma roupa e a mesma luz. Fale com as suas palavras. Toque em cada post para ver o roteiro.</p>`;
+      grav.forEach(p => {
+        html += `<details class="item dentro"><summary><span class="data">${pad(p.dia)}/11<small>${CURTO[new Date(ANO,MES,p.dia).getDay()]} ${p.hora}</small></span>
+          <span class="resumo-post"><b>${esc(p.item)}</b><span>${esc(p.tipo)} · ${esc(p.tema)}</span></span>${chipPost(p)}</summary>
+          ${conteudoPost(p)}
+          ${tk(`${p.id}-gravado`, p.tipo.startsWith("Carrossel") ? "Fotos tiradas" : "Gravado", "")}
+          ${tk(`${p.id}-agendado`, "Agendado no Meta Business Suite", `${dataLonga(p.dia)}, ${p.hora}. Capa: frame do vídeo com o texto da tela. Sem arte.`)}</details>`;
+      });
+      if (EXTRA[d]) html += tk(`${d}-extra`, "Extra do bloco", esc(EXTRA[d]));
+      html += `</section>`;
+    }
+    html += `<section class="cartao"><h2>minhas 3 ações de hoje</h2>
+      <p class="info">Além da rotina, escolha 3 ações e execute. Elas entram no progresso e no resumo para a Ivanise.</p>
+      ${[0,1,2].map(i => { const id = `${d}-a${i}`, c = (dados[id]||{}).c || "";
+        return `<select data-acao="${id}" aria-label="ação ${i+1}" style="width:100%;min-height:48px;border-radius:12px;border:2px solid var(--linha);background:var(--cartao);color:var(--tinta);font:inherit;font-size:16px;padding:8px"><option value="">escolha a ação ${i+1}</option>${Object.entries(ACOES).map(([k,a]) => `<option value="${k}"${k===c?" selected":""}>${esc(a.n)}</option>`).join("")}</select>`
+          + (c && ACOES[c] ? tk(id, esc(ACOES[c].n), esc(ACOES[c].dica), ACOES[c].msg ? caixaCopiar(ACOES[c].msg, "mensagem pronta", true) : "") : ""); }).join("")}
+    </section>`;
+    html += `<section class="cartao"><h2>stories de hoje</h2>
+      <p class="info">Tudo pronto: é só seguir. Se quiser fazer outro ou melhorar, fique à vontade.</p>
+      ${storiesDoDia(d).map(([k,quando,s]) => tk(`${d}-${k}`, `${quando}: ${esc(s.formato.toLowerCase())}`, "", storyHtml(s))).join("")}
+      ${tk(`${d}-status`, "Os mesmos Stories no Status do WhatsApp", "Quem tem o número salvo vê na hora.")}
+    </section>`;
+    if (SEMANA[sem]){
+      const s = SEMANA[sem];
+      let extra = "";
+      if (s.id==="indicacao") extra = caixaCopiar(MSG_INDICA,"mensagem do programa de indicação",true)+`<a class="btn contorno" style="text-align:center;text-decoration:none;display:grid;place-items:center" href="${PASTA_INDICA}" target="_blank" rel="noopener">materiais do Indique e Ganhe</a>`;
+      if (s.id==="reativar") extra = caixaCopiar(MSG_REATIVAR,"para quem já devolveu (comece pelas 8 mães da extratora)",true)+caixaCopiar(MSG_RENOVAR,"para quem vence em 3 dias",true);
+      if (s.id==="google" && GPOST[d]) extra = `<p class="info" style="margin:0"><b>Tema:</b> ${esc(GPOST[d].tema)} · <b>Botão:</b> ${esc(GPOST[d].botao)}</p>`+caixaCopiar(GPOST[d].texto,"texto do post no Google")+`<p class="info" style="margin:0">Itens do Giro: "preço especial no site", nunca porcentagem. Oferta só quando a rede definir a campanha.</p>`;
+      html += `<section class="cartao"><h2><span class="etiqueta am">tarefa da semana</span></h2>${tk(`${d}-${s.id}`, s.nome, esc(s.sub), extra)}</section>`;
+    }
+    html += `<section class="cartao"><h2>fim do dia</h2>
+      ${tk(`${d}-msgs`, "Responder Direct, comentários e WhatsApp", esc(T.depois), T.msg?caixaCopiar(T.msg,"mensagem para mandar no direct"):"")}
+      ${tk(`${d}-avaliacao`, "Pós-venda antes da metade do plano", "Para quem está entre o 8º e o 10º dia de um plano de 30 dias (a troca vale até o 15º dia). Em planos de outro tamanho, faça antes da metade, com tempo para trocar. Se estiver tudo bem: link do Google e pedido de foto ou vídeo (prova social). Se tiver problema: resolva ou ofereça troca, e não mande o link. A pesquisa NPS continua no final do plano. Nunca oferecer nada em troca de avaliação.", caixaCopiar(MSG_POSVENDA,"1º: está tudo em ordem?",true)+caixaCopiar(MSG_AVALIAR,"se estiver tudo bem: avaliação no Google + prova social",true)+caixaCopiar(MSG_PROBLEMA,"se tiver problema: resolver primeiro",true))}</section>`;
+  }
+  html += `<section class="cartao"><h2>avisar a Ivanise</h2><p class="info">No fim do dia, mande o resumo com o status de cada tarefa e as observações.</p>
+    <a class="btn wa largo" id="resumo-wa" href="${waLink(resumoTexto())}" target="_blank" rel="noopener">mandar o resumo no WhatsApp</a>
+    <button type="button" class="btn contorno largo" id="resumo">só copiar o resumo</button></section>`;
+  app.innerHTML = html;
+}
+
+/* ===== pendências: em andamento e não concluídas ===== */
+function todasTarefas(){
+  const l = [];
+  for (let d=0; d<=30; d++) tarefasDoDia(d).forEach(t => l.push({...t, dia:d}));
+  for (const k in CHECK) CHECK[k].itens.forEach(([id,n]) => l.push({id:`plano-${k}-${id}`, nome:`${CHECK[k].tit}: ${n}`, dia:-1, aba:(k==="reuniao"||k==="trafego")?"reuniao":"plano"}));
+  return l;
+}
+function pendencias(){
+  return todasTarefas().filter(t => ["andamento","nao"].includes(st(t.id)));
+}
+
+function viewCrono(){
+  const primeiro = new Date(ANO,MES,1).getDay();
+  let cel = CURTO.map(c => `<div class="cab">${c}</div>`).join("");
+  for (let i=0;i<primeiro;i++) cel += "<div></div>";
+  for (let d=1; d<=30; d++){
+    const [f,t] = contagem(d);
+    const temNao = tarefasDoDia(d).some(x => st(x.id)==="nao");
+    const cls = (f===t?"cheio":f>0?"meio":"") + (ehHoje(d)?" hoje":"");
+    const ps = postsDoDia(d);
+    const marca = temNao ? "⚠" : postsGravar(d).length || EXTRA[d] ? "gravar" : ps.length ? ps.map(p => p.tipo.startsWith("Carrossel")?"carr":"reels").join("+") : "";
+    cel += `<button type="button" class="${cls}" data-dia="${d}" aria-label="${d} de novembro, ${f} de ${t} feitas">${d}<small>${f}/${t}</small>${marca?`<small>${marca}</small>`:""}</button>`;
+  }
+  const pend = pendencias();
+  let lista = "", semAtual = -1;
+  POSTS.forEach(p => {
+    const s = Math.floor((p.dia + primeiro - 1) / 7);
+    if (s !== semAtual){ semAtual = s; lista += `<p class="semana-tit">semana ${s+1} · gravar ${dataLonga(p.gravar)}</p>`; }
+    lista += `<details class="item"><summary>
+        <span class="data">${pad(p.dia)}/11<small>${CURTO[new Date(ANO,MES,p.dia).getDay()]} ${p.hora}</small></span>
+        <span class="resumo-post"><b>${esc(p.item)}</b><span>${esc(p.tipo)} · ${esc(p.tema)}</span></span>${chipPost(p)}</summary>
+        ${conteudoPost(p)}
+        ${tk(`${p.id}-gravado`, p.tipo.startsWith("Carrossel") ? "Fotos tiradas" : "Gravado", "")}
+        ${tk(`${p.id}-agendado`, "Agendado no Meta Business Suite", "")}
+        ${tk(`${p.id}-publicado`, "Publicado e compartilhado nos Stories", "")}</details>`;
+  });
+  app.innerHTML = `
+    <div class="dia"><h1>cronograma de novembro<small>${POSTS.filter(p => st(p.id+"-publicado")==="feito").length} de ${POSTS.length} posts publicados</small></h1></div>
+    <section class="cartao"><h2>pendências</h2>
+      ${pend.length ? pend.map(t => `<button type="button" class="pend" ${t.dia>=0?`data-dia="${t.dia}"`:`data-aba="${t.aba||"plano"}"`}><b>${esc(t.nome)}</b><span>${t.dia>0?dataLonga(t.dia):t.dia===0?"preparação":"plano"} · ${NOME_ST[st(t.id)]}${obs(t.id)?" · "+esc(obs(t.id)):""}</span></button>`).join("") : `<p class="info">Nada em andamento ou não concluído.</p>`}
+    </section>
+    <section class="cartao"><div class="mes">${cel}</div>
+      <div class="legenda"><span><i style="background:var(--verde);border-color:var(--verde)"></i>dia completo</span><span><i style="border-color:var(--laranja)"></i>começado</span><span>⚠ = tem não concluído</span></div>
+      <p class="info">Toque no dia para ver as tarefas. Todo dia também tem 3 Stories.</p></section>
+    <h2 style="margin:8px 0 0;font-size:22px;font-weight:800">todos os posts</h2>
+    <p class="info" style="margin:0">Toque no post para ver roteiro, legenda e status. Black Friday fica em aberto até a rede definir.</p>
+    ${lista}`;
+}
+
+function viewReuniao(){
+  app.innerHTML = `
+    <div class="dia"><h1>combinados da reunião de gestão<small>dia 22/10/2026</small></h1></div>
+    <section class="cartao"><h2>o que combinamos</h2>
+      <p class="info">Cada combinado tem status e observação. As ações do dia a dia já estão na aba fazer hoje.</p>
+      ${CHECK.reuniao.itens.map(([id,n,s]) => tk(`plano-reuniao-${id}`, esc(n), esc(s))).join("")}</section>
+    <section class="cartao"><h2>${CHECK.trafego.tit.toLowerCase()}</h2>
+      ${CHECK.trafego.itens.map(([id,n,s]) => tk(`plano-trafego-${id}`, esc(n), esc(s))).join("")}</section>
+    <section class="cartao"><h2>mensagens prontas</h2>
+      ${caixaCopiar(MSG_PROSPEC,"prospecção no Instagram")}
+      ${caixaCopiar(MSG_INDICA,"programa de indicação",true)}
+      ${caixaCopiar(MSG_PARCERIA,"nova parceira")}</section>
+    <section class="cartao"><h2>indicadores novos</h2><ul style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px">
+      <li>Conversas vindas do anúncio e custo por conversa.</li><li>Pedidos vindos do anúncio.</li>
+      <li>Indicações recebidas.</li><li>Respostas da prospecção.</li></ul></section>`;
+}
+
+function viewPlano(){
+  const sem = [1,2,3,4];
+  app.innerHTML = `
+    <div class="dia"><h1>plano de comunicação<small>novembro 2026 a janeiro 2027</small></h1></div>
+    <section class="cartao"><h2>o objetivo</h2>
+      <p style="margin:0">Fazer o Instagram, o Google e o WhatsApp de Sinop <b>gerarem pedidos</b>, com a Joice como rosto da unidade e cerca de 3 horas por semana.</p>
+      <p class="info">O óbvio: o que mais derrubou o perfil foram 5 semanas sem postar. A regra número 1 é não parar.</p></section>
+    <section class="cartao"><h2>metas de 90 dias</h2>
+      <table class="tabela"><thead><tr><th>indicador</th><th>hoje</th><th>meta</th></tr></thead><tbody>${METAS.map(m => `<tr><td>${m[0]}</td><td>${m[1]}</td><td><b>${m[2]}</b></td></tr>`).join("")}</tbody></table></section>
+    <section class="cartao"><h2>a semana em 3 horas</h2>
+      <table class="tabela"><tbody>
+        <tr><td><b>Segunda</b></td><td>Bloco de gravação: 3 Reels da semana + vídeos curtos de Stories. Agendar no Business Suite. (1h30)</td></tr>
+        <tr><td><b>Todo dia</b></td><td>3 Stories (manhã mostra, tarde conversa, noite bastidor), Status do WhatsApp e responder mensagens. (15 min)</td></tr>
+        <tr><td><b>Ter, qui, sáb</b></td><td>Reels sai às 19h. Conferir e compartilhar nos Stories.</td></tr>
+        <tr><td><b>Quarta</b></td><td>Post no Google + 2 fotos novas. (10 min)</td></tr>
+        <tr><td><b>Sexta</b></td><td>Renovação e reativação no WhatsApp, até 15 mensagens. (15 min)</td></tr>
+        <tr><td><b>8º ao 10º dia do plano</b></td><td>Pós-venda antes da metade do plano (a troca vale até o 15º dia num plano de 30): está tudo em ordem? Se sim, link do Google e pedido de foto ou vídeo. Se não, resolver ou trocar. NPS no final do plano.</td></tr>
+        <tr><td><b>Semana apertada</b></td><td>Mínimo: 1 Reels, 1 Story por dia e responder no mesmo dia.</td></tr></tbody></table></section>
+    <section class="cartao"><h2>o que postar</h2><ul style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px">
+      <li><b>Vídeo em primeiro lugar:</b> 3 Reels por semana, todos com a Joice.</li>
+      <li><b>Carrossel:</b> no máximo 2 no mês, só com fotos reais.</li>
+      <li><b>Arte:</b> nenhuma feita pela unidade. Só a que a franqueadora mandar.</li>
+      <li><b>Linha editorial:</b> 5 editorias, detalhadas logo abaixo.</li>
+      <li><b>Black Friday:</b> em aberto até a rede definir.</li></ul>
+      <button type="button" class="btn contorno largo" data-aba="crono">ver o cronograma com roteiros</button></section>
+    ${editorialHtml()}
+    ${Object.keys(CHECK).filter(k => k!=="reuniao" && k!=="trafego").map(k => `<section class="cartao"><h2>${CHECK[k].tit.toLowerCase()}</h2>
+      ${CHECK[k].itens.map(([id,n,s]) => tk(`plano-${k}-${id}`, esc(n), esc(s))).join("")}</section>`).join("")}
+    <section class="cartao"><h2>indicadores da semana</h2><p class="info">Preencha toda segunda com os números da semana anterior.</p>
+      <div class="ind"><span></span>${sem.map(s => `<span class="h">sem ${s}</span>`).join("")}
+      ${IND.map(([id,n]) => `<span>${n}</span>${sem.map(s => `<input inputmode="numeric" aria-label="${n}, semana ${s}" data-ind="${s}-${id}" value="${esc((dados._ind[s]||{})[id]||"")}">`).join("")}`).join("")}</div></section>
+    <section class="cartao"><h2>regras de toda peça</h2><ul style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px">
+      <li>"o clubkids" sempre em minúsculas; citar Sinop.</li><li>Giro: "preço especial no site", nunca porcentagem.</li>
+      <li>Oferta: prazo da campanha e "promoções não acumulativas".</li><li>Criança só com autorização dos pais.</li>
+      <li>Nada é publicado, enviado ou alterado em perfil público sem aprovação.</li></ul></section>`;
+}
+
+function viewGuia(){
+  app.innerHTML = `
+    <div class="dia"><h1>guia</h1></div>
+    <section class="cartao guia"><h3>em todo vídeo</h3><ul>
+      <li>Vertical, luz de janela, 15 a 30 segundos.</li><li>Olhe para a câmera e fale o gancho nos 2 primeiros segundos.</li>
+      <li>Cite Sinop na fala ou na legenda.</li><li>Termine chamando para o app ou o WhatsApp.</li><li>Criança só aparece com autorização dos pais.</li></ul></section>
+    <section class="cartao guia"><h3>agendar no meta business suite</h3><ol>
+      <li>Abra o Meta Business Suite e toque em "Criar Reel" (ou "Criar post" para carrossel).</li>
+      <li>Escolha o vídeo, cole a legenda do cronograma e escolha a capa (um frame do vídeo).</li>
+      <li>Em "Opções de agendamento", coloque o dia e o horário do cronograma.</li>
+      <li>Marque "feito" em "Agendado" aqui na página.</li>
+      <li>Para collab, convide a parceira como colaboradora pelo Instagram.</li></ol></section>
+    <section class="cartao guia"><h3>status das tarefas</h3><ul>
+      <li><b>início:</b> ainda não começou.</li><li><b>em andamento:</b> começou e falta terminar.</li><li><b>feito:</b> concluído.</li>
+      <li><b>não concluído:</b> não deu. Escreva na observação o porquê e o que falta. Aparece nas pendências do cronograma e no resumo para a Ivanise.</li></ul></section>
+    <section class="cartao guia"><h3>mensagens automáticas do whatsapp</h3>
+      <p class="info">WhatsApp Business > Ferramentas comerciais. São gratuitas e respondem sozinhas.</p>
+      ${caixaCopiar(`Oi! Aqui é a Joice, do clubkids Sinop. Me conta a idade do seu pequeno e o que você procura que eu te ajudo. Para alugar direto: ${LINK_APP}`,"mensagem de saudação (para quem chama pela primeira vez)")}
+      ${caixaCopiar(`Oi! Agora não consigo responder, mas já vi sua mensagem e te retorno em breve. Se quiser adiantar, os itens e a disponibilidade estão no app: ${LINK_APP}`,"mensagem de ausência (fora do horário)")}
+      <p class="info">Respostas rápidas: cadastre renovação, reativação e avaliação com atalhos como /renovar, /fase e /avaliar. Até 15 mensagens por dia, uma a uma, nunca em massa.</p></section>
+    <section class="cartao guia"><h3>prospecção no instagram (clientes frias)</h3><ol>
+      <li><b>Onde achar:</b> seguidoras do perfil que nunca alugaram; seguidoras e comentários de perfis de mães, influencers, consultoras e fotógrafas de Sinop.</li>
+      <li><b>Antes de mandar mensagem:</b> curta 2 posts e responda um Story dela. Assim ela já viu seu nome.</li>
+      <li><b>Mensagem:</b> personalizada, curta, sem link na primeira mensagem. Use a mensagem pronta e troque o que está entre colchetes.</li>
+      <li><b>Limite:</b> até 15 por dia. Mais que isso o Instagram pode bloquear a conta.</li>
+      <li><b>Se responder:</b> pergunte a idade do pequeno, indique o item e mande o link do app.</li></ol>
+      ${caixaCopiar(MSG_PROSPEC,"mensagem de prospecção")}</section>
+    <section class="cartao guia"><h3>tráfego pago para o whatsapp</h3><ul>
+      <li>Campanha com objetivo de mensagens: o anúncio abre uma conversa no WhatsApp da unidade.</li>
+      <li>Criativo: o Reels com mais visualizações. Público: Sinop, área de entrega, mães e gestantes.</li>
+      <li>O anúncio só dá resultado se o atendimento for rápido: responda em até 1 hora.</li>
+      <li>Marque cada conversa com a etiqueta "lead anúncio" para saber quantas viraram pedido.</li></ul></section>
+    <section class="cartao guia"><h3>programa de indicação</h3><ul>
+      <li>Toda terça, mande para 5 clientes que alugaram e gostaram.</li>
+      <li>Use os materiais da campanha Indique e Ganhe da rede.</li></ul>
+      <a class="btn contorno largo" style="text-align:center;text-decoration:none;display:grid;place-items:center" href="${PASTA_INDICA}" target="_blank" rel="noopener">materiais do Indique e Ganhe</a></section>
+    <section class="cartao guia"><h3>catálogo do whatsapp</h3><ul>
+      <li>Foto real de cada item, nome e descrição curta.</li><li>Sem preço: o preço fica no app e muda com as campanhas.</li><li>No campo de link, o link do item no app.</li></ul></section>
+    <section class="cartao guia"><h3>descrição do google</h3>
+      ${caixaCopiar("O clubkids Sinop aluga brinquedos e itens para bebês e crianças de 0 a 6 anos: extratora de leite, berços, balanços, Pikler, playgrounds e carrinhos elétricos. Itens higienizados, entrega e retirada em Sinop. Peça pelo app ou fale com a Joice no WhatsApp.","texto para o perfil do Google")}</section>
+    <section class="cartao guia"><h3>fotos do google (as 12 da primeira semana)</h3><ol>
+      <li>Logo do clubkids (arquivo da franqueadora): logo do perfil.</li><li>Você sorrindo com itens ao fundo: capa do perfil.</li>
+      <li>Espaço ou estoque organizado (2 fotos).</li><li>Fachada ou entrada, se atender no local.</li>
+      <li>Extratora de leite.</li><li>Carrinho elétrico.</li><li>Playground.</li><li>Pikler.</li><li>Jumper.</li>
+      <li>Item sendo higienizado.</li><li>Item embalado pronto para entrega.</li></ol>
+      <p class="info">Depois: 2 fotos novas toda quarta. Cliente usando em casa só com autorização. Nada de arte, banner ou foto da internet.</p></section>
+    <section class="cartao guia"><h3>avaliações no google</h3><ul>
+      <li>Peça no pós-venda feito antes da metade do plano: num plano de 30 dias, entre o 8º e o 10º dia, porque a troca vale até o 15º. Assim, se tiver algo errado, ainda dá para trocar.</li>
+      <li>1º pergunte se está tudo em ordem. Se estiver, mande o link do Google e peça uma foto ou vídeo do pequeno usando o item (prova social, sempre com autorização para postar).</li>
+      <li>Se tiver problema, resolva ou ofereça a troca, e não mande o link nesse momento.</li>
+      <li>A pesquisa de satisfação (NPS) continua no final do plano, separada.</li>
+      <li>Mande o link direto com a mensagem pronta (/avaliar).</li><li>Responda todas em até 2 dias, citando o item e Sinop.</li>
+      <li>1 vez por semana, mostre uma avaliação nos Stories e agradeça.</li>
+      <li>Proibido: dar desconto, brinde ou sorteio em troca, pedir só 5 estrelas ou pedir para quem não alugou.</li>
+      <li>Nos Stories e no WhatsApp: "procura clubkids Sinop no Google e salva a gente".</li></ul></section>`;
+}
+
+function resumoTexto(){
+  const d = diaSel, l = tarefasDoDia(d);
+  const marca = {inicio:"○",andamento:"◐",feito:"✓",nao:"✗"};
+  const linhas = l.map(t => `${marca[st(t.id)]} ${t.nome}${st(t.id)!=="feito"&&st(t.id)!=="inicio"?" ("+NOME_ST[st(t.id)]+")":""}${obs(t.id)?"\n   obs: "+obs(t.id):""}`);
+  const quando = d === 0 ? "preparação" : dataLonga(d);
+  const f = l.filter(t => st(t.id)==="feito").length;
+  return `Joice, clubkids Sinop (${quando})\nFeito: ${f} de ${l.length}\n\n${linhas.join("\n")}`;
+}
+
+function render(){
+  document.querySelectorAll("header [data-aba]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.aba===aba)));
+  if (aba==="crono") viewCrono(); else if (aba==="reuniao") viewReuniao(); else if (aba==="plano") viewPlano(); else if (aba==="guia") viewGuia(); else viewHoje();
+}
+function atualizar(id){
+  const s = st(id);
+  document.querySelectorAll(`.tk[data-id="${CSS.escape(id)}"]`).forEach(el => {
+    el.dataset.s = s;
+    el.querySelectorAll("[data-v]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v===s)));
+    const det = el.querySelector("details.obs"), ta = el.querySelector("textarea");
+    ta.placeholder = s==="nao" ? "por que não concluiu? o que falta?" : "anote o que precisar";
+    if (s==="nao" && !det.open){ det.open = true; ta.focus(); }
+  });
+  if (aba==="hoje"){
+    const [f,t] = contagem(diaSel);
+    const b = document.getElementById("barra"), c = document.getElementById("contador");
+    if (b) b.style.width = (t?f/t*100:0)+"%"; if (c) c.textContent = `${f} de ${t}`;
+    const w = document.getElementById("resumo-wa"); if (w) w.href = waLink(resumoTexto());
+  }
+}
+
+document.addEventListener("click", e => {
+  const ab = e.target.closest("[data-aba]"); if (ab){ aba = ab.dataset.aba; render(); window.scrollTo(0,0); return; }
+  const sb = e.target.closest("[data-st]"); if (sb){
+    const id = sb.dataset.st, v = sb.dataset.v;
+    dados[id] = {...(dados[id]||{}), s:v}; if (v==="inicio" && !dados[id].o) delete dados[id];
+    salvar(); atualizar(id); if (v==="feito") toast("feito!"); return; }
+  const c = e.target.closest("[data-copiar]"); if (c){ copiar(c.dataset.copiar, "texto copiado"); return; }
+  const ir = e.target.closest("[data-ir]"); if (ir){ diaSel = Math.max(0, Math.min(30, diaSel + Number(ir.dataset.ir))); render(); window.scrollTo(0,0); return; }
+  const di = e.target.closest("[data-dia]"); if (di){ diaSel = Number(di.dataset.dia); aba="hoje"; render(); window.scrollTo(0,0); return; }
+  if (e.target.closest("#resumo")) copiar(resumoTexto(), "resumo copiado, cole no WhatsApp");
+});
+document.addEventListener("input", e => {
+  const o = e.target.closest("[data-obs]");
+  if (o){ const id = o.dataset.obs; dados[id] = {...(dados[id]||{s:"inicio"}), o:o.value}; salvar();
+    const w = document.getElementById("resumo-wa"); if (w) w.href = waLink(resumoTexto()); return; }
+  const n = e.target.closest("[data-ind]");
+  if (n){ const [s,id] = n.dataset.ind.split("-"); dados._ind[s] = {...(dados._ind[s]||{}), [id]:n.value}; salvar(); }
+});
+document.addEventListener("change", e => {
+  const s = e.target.closest("[data-acao]");
+  if (s){ const id = s.dataset.acao; if (s.value) dados[id] = {s:"inicio", c:s.value}; else delete dados[id]; salvar(); const y = window.scrollY; render(); window.scrollTo(0,y); }
+});
+/* ===== sincronização com o Flow CRM (Supabase) ===== */
+const SB_URL = "https://bqspprdmvludxeokcyjp.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxc3BwcmRtdmx1ZHhlb2tjeWpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4NTkzMzgsImV4cCI6MjA5NjQzNTMzOH0.AgaMkfIgX4yB5rQ7M-Em5DG3_ONZAQwtKRQd_rz3utY";
+const TOKEN = (() => { try { const k = new URLSearchParams(location.search).get("k"); if (k) { localStorage.setItem(CHAVE+"_token", k); return k; } return localStorage.getItem(CHAVE+"_token") || ""; } catch(e) { return new URLSearchParams(location.search).get("k") || ""; } })();
+let enviado = {}; try { enviado = JSON.parse(localStorage.getItem(CHAVE+"_enviado") || "{}") || {}; } catch(e) { enviado = {}; }
+let syncTimer = null, syncPronto = false;
+function marcaSync(txt){ const el = document.getElementById("sync"); if (el) el.textContent = txt; }
+async function rpc(fn, body){
+  const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, {method:"POST", headers:{"apikey":SB_KEY,"Authorization":`Bearer ${SB_KEY}`,"Content-Type":"application/json"}, body:JSON.stringify(body)});
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+function retratoAtual(){
+  const meta = {}; todasTarefas().forEach(t => meta[t.id] = t);
+  const out = {};
+  for (const id in dados){
+    if (id === "_ind") continue;
+    const v = dados[id]; if (!v || typeof v !== "object") continue;
+    const m = meta[id] || {};
+    out[id] = {item_id:id, dia: m.dia >= 0 ? m.dia : "", nome: m.nome || id, status: v.s || "inicio", obs: v.o || "", escolha: v.c || null, valor: null};
+  }
+  for (const s in (dados._ind || {})) for (const k in dados._ind[s]) out[`_ind:${s}:${k}`] = {item_id:`_ind:${s}:${k}`, dia:"", nome:`Indicador semana ${s}: ${k}`, status:"inicio", obs:"", escolha:null, valor:String(dados._ind[s][k] ?? "")};
+  for (let d=0; d<=30; d++){ const [f,t] = contagem(d); out[`_dia:${d}`] = {item_id:`_dia:${d}`, dia:d, nome:d===0?"Resumo da preparação":`Resumo do dia ${pad(d)}/11`, status: f===t ? "feito" : f>0 ? "andamento" : "inicio", obs:"", escolha:null, valor:`${f}/${t}`}; }
+  return out;
+}
+function agendarSync(){ if (!TOKEN || !syncPronto) return; clearTimeout(syncTimer); marcaSync("salvando…"); syncTimer = setTimeout(enviarSync, 800); }
+async function enviarSync(){
+  if (!TOKEN) return;
+  const atual = retratoAtual(), mudou = [];
+  for (const id in atual) if (JSON.stringify(atual[id]) !== JSON.stringify(enviado[id])) mudou.push(atual[id]);
+  for (const id in enviado) if (!atual[id] && !id.startsWith("_")) mudou.push({item_id:id, dia:enviado[id].dia, nome:enviado[id].nome, status:"inicio", obs:"", escolha:null, valor:null});
+  if (!mudou.length){ marcaSync("✓ salvo no CRM"); return; }
+  try {
+    await rpc("plano_gravar", {p_token:TOKEN, p_itens:mudou});
+    mudou.forEach(x => { if (atual[x.item_id]) enviado[x.item_id] = atual[x.item_id]; else delete enviado[x.item_id]; });
+    try { localStorage.setItem(CHAVE+"_enviado", JSON.stringify(enviado)); } catch(e) {}
+    marcaSync("✓ salvo no CRM");
+  } catch(e) {
+    marcaSync("sem internet: salvo no celular");
+    clearTimeout(syncTimer); syncTimer = setTimeout(enviarSync, 30000);
+  }
+}
+async function iniciarSync(){
+  if (!TOKEN){ marcaSync(""); return; }
+  marcaSync("conectando…");
+  try {
+    const r = await rpc("plano_ler", {p_token:TOKEN});
+    if (!r){ marcaSync("link inválido: fale com a Ivanise"); return; }
+    const pendente = {}; const local = retratoAtual();
+    for (const id in local) if (JSON.stringify(local[id]) !== JSON.stringify(enviado[id])) pendente[id] = true;
+    (r.itens || []).forEach(it => {
+      const id = it.item_id;
+      if (id.startsWith("_dia:")) return;
+      if (id.startsWith("_ind:")){ const [, s, k] = id.split(":"); if (!pendente[id]){ dados._ind[s] = {...(dados._ind[s]||{}), [k]: it.valor || ""}; } return; }
+      if (pendente[id]) return;
+      if (it.status === "inicio" && !it.obs && !it.escolha) delete dados[id];
+      else dados[id] = {s: it.status, o: it.obs || "", ...(it.escolha ? {c: it.escolha} : {})};
+    });
+    enviado = {}; const base = retratoAtual();
+    (r.itens || []).forEach(it => { if (base[it.item_id] && !pendente[it.item_id]) enviado[it.item_id] = base[it.item_id]; });
+    try { localStorage.setItem(CHAVE, JSON.stringify(dados)); localStorage.setItem(CHAVE+"_enviado", JSON.stringify(enviado)); } catch(e) {}
+    syncPronto = true;
+    const y = window.scrollY; render(); window.scrollTo(0, y);
+    enviarSync();
+  } catch(e) {
+    syncPronto = true;
+    marcaSync("sem internet: salvo no celular");
+    setTimeout(iniciarSync, 30000);
+  }
+}
+render();
+iniciarSync();
+</script>
+</body>
+</html>

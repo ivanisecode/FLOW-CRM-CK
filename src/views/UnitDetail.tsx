@@ -5,6 +5,7 @@ import { GROUP_CFG, STATUS_TASK, daysSince, fmtBRL, fmtDate, genUUID } from "../
 import { btnSt, inputSt, labelSt } from "../lib/styles";
 import { sb } from "../lib/supabase";
 import { UnitKanban } from "./KanbanView";
+import { PlanoComunicacaoTab } from "./PlanoComunicacaoTab";
 
 // ─── UNIT DETAIL PANEL ────────────────────────────────────────
 export function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
@@ -98,6 +99,7 @@ export function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
     {id:"kanban",label:"Kanban"},
     {id:"contacts",label:`Contatos (${(localUnit.contacts||[]).length})`},
     {id:"notes",label:"Notas"},
+    {id:"plano",label:"Plano de comunicação"},
   ];
 
   return (
@@ -552,6 +554,9 @@ export function UnitDetail({ unit, onClose, onUpdate, allMeetings }) {
                 style={{...inputSt,height:280,resize:"vertical",width:"100%"}} />
             </div>
           )}
+
+          {/* PLANO DE COMUNICAÇÃO */}
+          {tab==="plano" && <PlanoComunicacaoTab unit={localUnit} />}
 
           {/* KANBAN */}
           {tab==="kanban" && (
