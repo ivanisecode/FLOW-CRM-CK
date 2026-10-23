@@ -4,6 +4,7 @@ import { MEETINGS_DATA } from "./data/meetings";
 import { C } from "./lib/constants";
 import { SUPABASE_URL, auth, sb, type Sessao } from "./lib/supabase";
 import { LoginView, SemPermissao } from "./views/LoginView";
+import { AcessosView, SolicitarAcesso, UnidadeHome } from "./views/AcessosView";
 import { buildUnits, buildUnitsFromDB, mergeSeedCadastro } from "./lib/units";
 import { AcompanhamentoView } from "./views/AcompanhamentoView";
 import { CadastroUnidadesView, CarteiraView, ImportFaturamentoModal, UsuariosView } from "./views/Admin";
@@ -23,25 +24,28 @@ import { UnitDetail } from "./views/UnitDetail";
 export default function App() {
   const [retorno] = useState(() => auth.lerRetornoDoEmail());
   const [sessao, setSessao] = useState<Sessao | null>(() => retorno?.sessao || auth.sessao());
-  const [modo, setModo] = useState<"entrar" | "nova">(retorno?.tipo === "recovery" ? "nova" : "entrar");
+  const [modo, setModo] = useState<"entrar" | "nova">(["recovery","invite","magiclink"].includes(retorno?.tipo || '') ? "nova" : "entrar");
   const [equipe, setEquipe] = useState<boolean | null>(null);
+  const [acesso,setAcesso] = useState<any>(null);
 
   useEffect(() => {
     if (!sessao || modo === "nova") return;
     let vivo = true;
-    sb.rpc("eh_equipe").then(r => { if (vivo) setEquipe(r === true); }).catch(() => { if (vivo) setEquipe(false); });
+    sb.rpc("acesso_atual").then(r => { if (vivo) {setAcesso(r);setEquipe(["supervisora","analista"].includes(r.perfil));} }).catch(() => { if (vivo) {setEquipe(false);setAcesso(null);} });
     return () => { vivo = false; };
   }, [sessao, modo]);
 
-  const sair = () => { auth.sair(); setSessao(null); setEquipe(null); setModo("entrar"); };
+  const sair = () => { auth.sair(); setSessao(null); setEquipe(null); setAcesso(null); setModo("entrar"); };
   if (!sessao || modo === "nova") return <LoginView modoInicial={modo} onEntrou={s => { setModo("entrar"); setSessao(s); }} />;
+  if (acesso?.perfil === 'franqueada') return <UnidadeHome unidades={acesso.unidades} onSair={sair}/>;
+  if (equipe === false && acesso) return <SolicitarAcesso email={sessao.email} onSair={sair} />;
   if (equipe === false) return <SemPermissao email={sessao.email} onSair={sair} />;
   if (equipe === null) return null;
-  return <FlowCRM email={sessao.email} onSair={sair} />;
+  return <FlowCRM email={sessao.email} supervisora={acesso?.perfil==='supervisora'} onSair={sair} />;
 }
 
 // ─── APP ROOT ─────────────────────────────────────────────────
-function FlowCRM({ email, onSair }: { email: string; onSair: () => void }) {
+function FlowCRM({ email, onSair, supervisora }: { email: string; onSair: () => void; supervisora:boolean }) {
   const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState("connecting");
@@ -270,13 +274,15 @@ function FlowCRM({ email, onSair }: { email: string; onSair: () => void }) {
       <TopBar activeTab={activeTab} setActiveTab={setActiveTab} dbStatus={dbStatus} />
       <div style={{display:"flex",justifyContent:"flex-end",alignItems:"center",gap:8,padding:"4px 14px",fontSize:11,color:C.textMuted,background:C.card,borderBottom:`1px solid ${C.cardBorder}`}}>
         <span>{email}</span>
+        {supervisora&&<button onClick={()=>setActiveTab('acessos')}>Autorizações de acesso</button>}
         <button onClick={onSair} style={{background:"none",border:`1px solid ${C.cardBorder}`,borderRadius:6,padding:"2px 8px",fontSize:11,cursor:"pointer",color:C.textPrimary,fontFamily:"inherit"}}>Sair</button>
       </div>
       <StatsBar units={units} />
       <div style={{maxWidth:"100%", overflowX:"hidden"}}>
         {activeTab==="panel"&&<PanelView units={units} onSelectUnit={setSelectedUnit} />}
         {activeTab==="acomp"&&<AcompanhamentoView units={units} onUpdateUnit={updateUnit} />}
-        {activeTab==="usuarios"&&<UsuariosView usuarios={usuarios} onSave={saveUsuario} onDelete={deleteUsuario} />}
+        {activeTab==="acessos"&&supervisora&&<AcessosView units={units}/>}
+        {activeTab==="usuarios"&&(supervisora?<UsuariosView usuarios={usuarios} onSave={saveUsuario} onDelete={deleteUsuario} />:<p style={{padding:20}}>Somente a supervisora pode autorizar novos usuários.</p>)}
         {activeTab==="carteira"&&<CarteiraView usuarios={usuarios} units={units} onAssign={assignCarteira} />}
         {activeTab==="cadastro"&&<CadastroUnidadesView units={units} usuarios={usuarios} onSaveUnit={saveUnitCadastro} onImportClick={()=>setShowImport(true)} />}
         {activeTab==="aniversarios"&&<AniversariantesView units={units} dbStatus={dbStatus} />}

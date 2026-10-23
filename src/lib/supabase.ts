@@ -48,6 +48,11 @@ function traduzErro(m: string) {
 export const auth = {
   sessao: lerSessao,
 
+  async primeiroAcesso(email: string) {
+    const volta = encodeURIComponent('https://musical-lokum-f21932.netlify.app/');
+    await authFetch(`otp?redirect_to=${volta}`, { email: email.trim().toLowerCase(), create_user: true });
+  },
+
   async entrar(email: string, senha: string) {
     const j = await authFetch("token?grant_type=password", { email: email.trim(), password: senha });
     const s = deResposta(j); gravarSessao(s); return s;
@@ -55,14 +60,14 @@ export const auth = {
 
   // Primeiro acesso: cria a senha. Só entra quem estiver em Usuários com este e-mail.
   async criarAcesso(email: string, senha: string) {
-    const volta = encodeURIComponent(window.location.origin);
+    const volta = encodeURIComponent('https://musical-lokum-f21932.netlify.app/');
     const j = await authFetch(`signup?redirect_to=${volta}`, { email: email.trim(), password: senha });
     if (j.access_token) { const s = deResposta(j); gravarSessao(s); return s; }
     return null; // precisa confirmar o e-mail
   },
 
   async esqueciSenha(email: string) {
-    const volta = encodeURIComponent(window.location.origin);
+    const volta = encodeURIComponent('https://musical-lokum-f21932.netlify.app/');
     await authFetch(`recover?redirect_to=${volta}`, { email: email.trim() });
   },
 
@@ -161,3 +166,4 @@ export const sb = {
     return true;
   },
 };
+
