@@ -148,6 +148,8 @@ export function PlanoComunicacaoTab({ unit }: { unit: any }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {erro && <div style={{ fontSize: 12, color: C.red }}>{erro}</div>}
 
+      <Bloco titulo="Materiais de apoio"><p style={{fontSize:12,color:C.textMuted}}>O plano inclui fotos e vídeos por brinquedo, provas sociais, feedbacks, campanhas e o guia de parcerias locais.</p><a href="https://drive.google.com/drive/folders/1nHtVbkHbTmazMI369MmNS_gZu15m8kFh" target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:C.textPrimary}}>Abrir a pasta do franqueado ↗</a></Bloco>
+      <Bloco titulo="Retornos semanais"><p style={{fontSize:12,color:C.textMuted}}>Fechamento na virada de sexta para sábado, às 00h de Brasília. A checagem e o envio automático no WhatsApp ainda dependem de integração.</p>{itens.filter(i=>i.item_id.startsWith("_weekly:")).map(i=>{let r:any;try{r=JSON.parse(i.valor||"{}");}catch{return null;}return <p key={i.item_id} style={{fontSize:12}}>Semana {i.item_id.slice(8)}: envio declarado em {quando(r.sentAt)} por {r.confirmedBy}. Registro manual; não confirma entrega no WhatsApp.</p>;})}</Bloco>
       <Bloco titulo="Link da franqueada" extra={<button onClick={carregar} style={{ ...btnSt(C.inset, C.textPrimary), border: `1px solid ${C.cardBorder}`, padding: "4px 10px", fontSize: 11 }}>Atualizar</button>}>
         <div style={{ fontSize: 11, wordBreak: "break-all", background: C.inset, padding: 8, borderRadius: 8, marginBottom: 8 }}>{link}</div>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -213,3 +215,4 @@ export function PlanoComunicacaoTab({ unit }: { unit: any }) {
     </div>
   );
 }
+

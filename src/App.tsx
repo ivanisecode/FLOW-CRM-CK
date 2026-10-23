@@ -29,7 +29,7 @@ export default function App() {
   useEffect(() => {
     if (!sessao || modo === "nova") return;
     let vivo = true;
-    sb.rpc("eh_equipe").then(r => { if (vivo) setEquipe(r !== false); }).catch(() => { if (vivo) setEquipe(true); });
+    sb.rpc("eh_equipe").then(r => { if (vivo) setEquipe(r === true); }).catch(() => { if (vivo) setEquipe(false); });
     return () => { vivo = false; };
   }, [sessao, modo]);
 
@@ -303,3 +303,4 @@ function FlowCRM({ email, onSair }: { email: string; onSair: () => void }) {
     </div>
   );
 }
+

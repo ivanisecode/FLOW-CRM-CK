@@ -8,15 +8,11 @@ update public.usuarios set email = 'supervisao@franquiasclubkids.com.br' where i
 insert into public.usuarios (id, nome, email, whatsapp)
   values ('u_jen', 'Jeniffer', '', '') on conflict (id) do nothing;
 
+-- A checagem validada vive fora do schema exposto e exige e-mail confirmado.
 create or replace function public.eh_equipe() returns boolean
-language sql stable security definer set search_path = public as $$
-  select exists (
-    select 1 from public.usuarios u
-    where coalesce(trim(u.email), '') <> ''
-      and lower(trim(u.email)) = lower(coalesce(auth.jwt() ->> 'email', ''))
-  )
-$$;
-grant execute on function public.eh_equipe() to anon, authenticated;
+language sql stable security invoker set search_path='' as $$select private.eh_equipe();$$;
+revoke all on function public.eh_equipe() from public,anon;
+grant execute on function public.eh_equipe() to authenticated;
 
 -- 2) Tranca todas as tabelas: só quem entrou E é da equipe lê e grava.
 --    A página da franqueada continua funcionando pelas funções plano_ler / plano_gravar (token).
@@ -31,3 +27,4 @@ begin
     execute format('create policy equipe_total on public.%I for all to authenticated using (public.eh_equipe()) with check (public.eh_equipe())', t.tablename);
   end loop;
 end $$;
+
