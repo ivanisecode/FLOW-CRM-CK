@@ -19,7 +19,8 @@ test("credentials go in POST body, never URL", async () => {
   };
   await signInWithPassword(config, "person@example.com", "password");
   assert.equal(capturedInit?.method, "POST");
-  assert.equal(capturedUrl.includes("password"), false);
+  assert.equal(new URL(capturedUrl).searchParams.has("password"), false);
+  assert.equal(new URL(capturedUrl).pathname, "/auth/v1/token");
   assert.equal(JSON.parse(String(capturedInit?.body)).email, "person@example.com");
 });
 
