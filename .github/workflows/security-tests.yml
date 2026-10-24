@@ -16,4 +16,4 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: node --experimental-strip-types --test src/security/authApi.test.ts
+      - run: node --experimental-strip-types --test src/security/*.test.ts
