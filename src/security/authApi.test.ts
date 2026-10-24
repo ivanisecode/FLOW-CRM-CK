@@ -1,38 +1,40 @@
-import { describe, expect, it, vi, afterEach } from "vitest";
-import { signInWithPassword, getAuthenticatedUser } from "./authApi";
+import test, { afterEach } from "node:test";
+import assert from "node:assert/strict";
+import { signInWithPassword, getAuthenticatedUser } from "./authApi.ts";
 
 const config = { url: "https://example.supabase.co", publishableKey: "sb_publishable_test" };
-afterEach(() => vi.unstubAllGlobals());
+const originalFetch = globalThis.fetch;
+afterEach(() => { globalThis.fetch = originalFetch; });
 
-describe("Supabase Auth REST adapter", () => {
-  it("never sends credentials through query strings", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        access_token: "token", refresh_token: "refresh", expires_in: 3600,
-        user: { id: "user-1" },
-      }),
-    });
-    vi.stubGlobal("fetch", fetchMock);
-    await signInWithPassword(config, "person@example.com", "password");
-    const [url, init] = fetchMock.mock.calls[0];
-    expect(url).not.toContain("password");
-    expect(init.method).toBe("POST");
-    expect(JSON.parse(init.body).email).toBe("person@example.com");
-  });
+test("credentials go in POST body, never URL", async () => {
+  let capturedUrl = "";
+  let capturedInit: RequestInit | undefined;
+  globalThis.fetch = async (url, init) => {
+    capturedUrl = String(url);
+    capturedInit = init;
+    return new Response(JSON.stringify({
+      access_token: "token", refresh_token: "refresh", expires_in: 3600,
+      user: { id: "user-1" },
+    }), { status: 200 });
+  };
+  await signInWithPassword(config, "person@example.com", "password");
+  assert.equal(capturedInit?.method, "POST");
+  assert.equal(capturedUrl.includes("password"), false);
+  assert.equal(JSON.parse(String(capturedInit?.body)).email, "person@example.com");
+});
 
-  it("rejects invalid credentials", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
-    await expect(signInWithPassword(config, "person@example.com", "bad")).rejects.toThrow();
-  });
+test("rejects invalid credentials", async () => {
+  globalThis.fetch = async () => new Response("", { status: 401 });
+  await assert.rejects(signInWithPassword(config, "person@example.com", "bad"));
+});
 
-  it("verifies the user with the server rather than trusting local metadata", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true, json: async () => ({ id: "user-1", email: "person@example.com" }),
-    });
-    vi.stubGlobal("fetch", fetchMock);
-    const user = await getAuthenticatedUser(config, "token");
-    expect(user.id).toBe("user-1");
-    expect(fetchMock.mock.calls[0][1].headers.Authorization).toBe("Bearer token");
-  });
+test("fetches authenticated identity from server", async () => {
+  let authHeader = "";
+  globalThis.fetch = async (_url, init) => {
+    authHeader = new Headers(init?.headers).get("Authorization") || "";
+    return new Response(JSON.stringify({ id: "user-1" }), { status: 200 });
+  };
+  const user = await getAuthenticatedUser(config, "token");
+  assert.equal(user.id, "user-1");
+  assert.equal(authHeader, "Bearer token");
 });
