@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>clubkids Três Lagoas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--fundo:#f8f5ea;--cartao:#fff;--tinta:#1d1d1b;--suave:#6c6a62;--linha:#e7e1cf;--laranja:#f19134;--rosa:#fcccdc;--verde:#6ece87;--azul:#6e81bf;--amarelo:#f9d856;--creme:#f4edd6;--escuro:#1d1d1b;--ok:#2f8a4a;--nao:#b2465b;--and:#b07a12}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fundo:#17171a;--cartao:#222227;--tinta:#f1efe8;--suave:#a9a69c;--linha:#34343b;--creme:#2b2a26;--escuro:#0f0f11}}
+:root[data-theme="dark"]{--fundo:#17171a;--cartao:#222227;--tinta:#f1efe8;--suave:#a9a69c;--linha:#34343b;--creme:#2b2a26;--escuro:#0f0f11}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--tinta);font:16px/1.5 Outfit,system-ui,sans-serif}
+header{background:var(--escuro);color:#f4edd6;padding:16px}
+.marca{display:flex;justify-content:space-between;align-items:baseline;gap:12px;max-width:960px;margin:0 auto}
+.marca b{font-size:20px}.marca span{font-size:13px;opacity:.8}
+nav{display:flex;gap:6px;overflow-x:auto;max-width:960px;margin:12px auto 0;scrollbar-width:none}
+nav button{flex:0 0 auto;border:0;border-radius:999px;padding:8px 14px;font:600 14px Outfit,sans-serif;background:transparent;color:#f4edd6;cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--creme);color:#1d1d1b}
+main{max-width:960px;margin:0 auto;padding:16px}
+h1{font-size:24px;margin:8px 0 4px}h2{font-size:18px;margin:0 0 8px}h3{font-size:16px;margin:12px 0 4px}
+.info{color:var(--suave);font-size:14px;margin:4px 0}
+.cartao{background:var(--cartao);border:1px solid var(--linha);border-radius:14px;padding:16px;margin:12px 0}
+.dia{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.seta{width:44px;height:44px;border-radius:50%;border:1px solid var(--linha);background:var(--cartao);color:var(--tinta);font-size:22px;cursor:pointer}
+.seta:disabled{opacity:.3}
+.barra{height:8px;background:var(--linha);border-radius:99px;overflow:hidden;margin:8px 0}.barra i{display:block;height:100%;background:var(--verde)}
+.etq{display:inline-block;font-size:12px;font-weight:600;border-radius:99px;padding:2px 10px;margin:0 4px 4px 0;background:var(--creme);color:var(--tinta)}
+.etq.lar{background:var(--laranja);color:#1d1d1b}.etq.az{background:var(--azul);color:#fff}.etq.ve{background:var(--verde);color:#1d1d1b}.etq.ro{background:var(--rosa);color:#1d1d1b}
+.tarefa{border:1px solid var(--linha);border-radius:12px;padding:12px;margin:10px 0}
+.tarefa b{display:block}
+.st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.st button{border:1px solid var(--linha);background:var(--cartao);color:var(--tinta);border-radius:10px;padding:8px 4px;font:600 13px Outfit,sans-serif;cursor:pointer}
+.st button[aria-pressed="true"][data-v="inicio"]{background:var(--creme)}
+.st button[aria-pressed="true"][data-v="andamento"]{background:var(--amarelo);color:#1d1d1b}
+.st button[aria-pressed="true"][data-v="feito"]{background:var(--verde);color:#1d1d1b}
+.st button[aria-pressed="true"][data-v="nao"]{background:var(--nao);color:#fff}
+details.obs summary{cursor:pointer;color:var(--suave);font-size:14px;margin-top:8px}
+textarea{width:100%;min-height:60px;border:1px solid var(--linha);border-radius:10px;padding:8px;font:14px Outfit,sans-serif;background:var(--fundo);color:var(--tinta)}
+.copiar{background:var(--creme);border-radius:10px;padding:10px;margin:8px 0;white-space:pre-wrap;font-size:14px;position:relative}
+.copiar button{display:block;margin-top:8px;border:0;border-radius:8px;padding:6px 12px;background:var(--laranja);color:#1d1d1b;font:600 13px Outfit,sans-serif;cursor:pointer}
+ol.rot{padding-left:20px;margin:6px 0}ol.rot li{margin:4px 0}
+.tabela{width:100%;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--linha);padding:8px 6px;text-align:left;vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--suave)}
+.post{border-left:4px solid var(--laranja);padding-left:12px}
+.post.pasta{border-color:var(--azul)}.post.parc{border-color:var(--verde)}
+.linha-post{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--linha);cursor:pointer}
+.linha-post .d{min-width:64px;font-weight:700}.linha-post .d small{display:block;font-weight:400;color:var(--suave)}
+.chip{font-size:12px;border-radius:99px;padding:2px 8px;background:var(--creme);white-space:nowrap}
+.chip.feito{background:var(--verde);color:#1d1d1b}.chip.andamento{background:var(--amarelo);color:#1d1d1b}.chip.nao{background:var(--nao);color:#fff}
+.aviso{border-left:4px solid var(--laranja)}
+@media(max-width:600px){.marca{flex-direction:column;gap:2px}h1{font-size:21px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca"><b>clubkids três lagoas</b><span>plano e tarefas da Tatiane · out a dez 2026 <small id="sync" style="display:block;font-size:12px;opacity:.85"></small></span></div>
+  <nav id="menu">
+    <button type="button" data-aba="hoje" aria-pressed="true">fazer hoje</button>
+    <button type="button" data-aba="crono" aria-pressed="false">cronograma</button>
+    <button type="button" data-aba="parceiras" aria-pressed="false">parceiras</button>
+    <button type="button" data-aba="guia" aria-pressed="false">guia</button>
+    <button type="button" data-aba="reuniao" aria-pressed="false">reunião</button>
+    <button type="button" data-aba="plano" aria-pressed="false">plano</button>
+  </nav>
+</header>
+<main id="app"></main>
+<script>
+/* ===== dados ===== */
+const ANO=2026, INICIO=new Date(2026,9,26), FIM=new Date(2026,11,31);
+const TAGS="#clubkidstreslagoas #treslagoas #treslagoasms #maternidade #aluguelinfantil";
+const BF="Em aberto: a Black Friday entra quando a rede fechar a campanha. A supervisão manda o material e a legenda.";
+const PASTA="https://drive.google.com/drive/folders/1jMOl-jPh-g8eMS0BndIOmAsop1fGgqRy";
+
+/* d = "AAAA-MM-DD"; tipo: reels | collab | pasta | rede */
+const POSTS=[
+ {d:"2026-10-27",tipo:"reels",ed:"A franqueada e a unidade",item:"Prazer, eu sou a franqueada",gravar:"2026-10-26",quem:"Você, em selfie. Celular na vertical, luz de frente.",tela:"amanhã o clubkids chega em três lagoas",
+  rot:[["fala","\"Oi, Três Lagoas! Eu sou a Tatiane e amanhã a gente inaugura o clubkids aqui na cidade.\""],["fala","\"Aqui você aluga brinquedos e itens de bebê para cada fase do seu filho, sem precisar comprar o que ele usa por poucos meses.\""],["cena","Mostre 2 ou 3 itens prontos: um playground, um carrinho elétrico, um balanço de bebê."],["fala","\"Tudo chega higienizado na sua casa. Me segue e me chama no direct.\""]],
+  leg:"Prazer, eu sou a Tatiane, a franqueada do clubkids em Três Lagoas. Amanhã a gente inaugura! 💛\n\nAqui você aluga brinquedos e itens de bebê para cada fase do seu filho, sem gastar com o que vai ser usado por poucos meses. Tudo chega higienizado na sua casa.\n\nMe segue e me chama no direct que eu te ajudo a escolher."},
+ {d:"2026-10-28",tipo:"collab",ed:"Parceiras e famílias",item:"Inauguração com a Camila",parc:"@camilafalco",gravar:"2026-10-27",quem:"Collab com a @camilafalco. Colorido, com ela falando e a criança brincando (com autorização dela).",tela:"chegou em três lagoas: o clubkids",
+  rot:[["fala","Camila: \"Gente, chegou em Três Lagoas e eu já testei!\""],["cena","Criança no quadriciclo e no playground, colorido."],["fala","Camila: \"Você aluga pelo tempo que quiser e quando a fase passa, devolve. Chega limpinho em casa.\""],["fala","Você: \"Hoje é a nossa inauguração. Me chama no WhatsApp que eu te ajudo a escolher.\""]],
+  leg:"Hoje é dia de festa: o clubkids chegou em Três Lagoas! 🎉\n\nA @camilafalco já testou com os filhos o quadriciclo elétrico e o playground, e conta como foi.\n\nAqui você aluga brinquedos e itens de bebê para cada fase, pelo tempo que precisar. Peça pelo app, pelo site ou pelo WhatsApp. Link na bio.",
+  obs:"Postar como collab (convidar a Camila como colaboradora), não só repost. Assim o post aparece no perfil dela também."},
+ {d:"2026-10-29",tipo:"reels",ed:"Como funciona e confiança",item:"Como alugar",gravar:"2026-10-28",quem:"Você, gravando a tela do celular + selfie.",tela:"alugar é simples",
+  rot:[["fala","\"Muita gente me perguntou ontem como funciona. É assim:\""],["cena","Grave a tela: abrindo o app, escolhendo o item e o tempo de aluguel."],["fala","\"Escolhe, recebe em casa higienizado e, quando a fase passar, devolve ou renova.\""],["fala","\"Ficou dúvida? Me chama no WhatsApp.\""]],
+  leg:"Como alugar no clubkids Três Lagoas:\n\n1. Escolhe o item no app, no site ou pelo WhatsApp\n2. Escolhe o tempo de aluguel\n3. Recebe em casa, higienizado\n4. Quando a fase passar, devolve ou renova\n\nFicou alguma dúvida? Me chama no direct."},
+ {d:"2026-10-30",tipo:"collab",ed:"Brincar em casa",item:"Dra. Nayana e a cama elástica",parc:"@Dra.NayanaFante",quem:"Collab com a Dra. Nayana. Vídeo dela com a criança na cama elástica (o Story que já deu 142 visualizações pode virar o Reels).",tela:"gastar energia sem sair de casa",
+  rot:[["cena","Criança pulando na cama elástica."],["fala","Dra. Nayana, como mãe: \"Aqui em casa é assim que a energia vai embora no fim do dia.\""],["fala","\"E o melhor: alugado, pelo tempo que eles quiserem.\""]],
+  leg:"Gastar energia sem sair de casa? A Dra. @Dra.NayanaFante mostra como está sendo aqui com a cama elástica do clubkids. 💛\n\nAluga pelo tempo que a criançada quiser e devolve quando a fase passar. Chama no WhatsApp para ver a disponibilidade.",
+  obs:"Com profissional de saúde: tom de mãe, sem \"recomendo como médica\"."},
+ {d:"2026-11-01",tipo:"reels",ed:"Cada fase do bebê",item:"5 itens que o bebê usa por poucos meses",gravar:"2026-10-31",quem:"Você, mostrando cada item.",tela:"comprar ou alugar?",
+  rot:[["fala","\"5 itens que o bebê usa por poucos meses e que valem mais alugar do que comprar.\""],["cena","Balanço Joie, tapete Tiny Love, jumperoo Skip Hop, berço portátil e extratora Medela, um por vez."],["fala","\"Aluga pelo tempo da fase. Salva para lembrar e manda para uma amiga grávida.\""]],
+  leg:"Tem item que o bebê usa por poucos meses e depois fica ocupando espaço em casa: balanço, tapete de atividades, jumperoo, berço portátil, extratora.\n\nAqui em Três Lagoas você aluga pelo tempo da fase. Salva para lembrar e manda para uma amiga grávida. 💛"},
+ {d:"2026-11-02",tipo:"pasta",ed:"Brincar em casa",item:"Feriado em casa",oque:"Vídeo de criança no playground ou na casinha cabana, da pasta da rede (ou vídeo seu, melhor ainda).",tela:"feriado em casa com as crianças?",
+  leg:"Feriado em casa com as crianças? Um brinquedo novo muda o dia: playground, casinha cabana, cozinha de madeira. Aqui em Três Lagoas você aluga pelo tempo que quiser. Chama no WhatsApp."},
+ {d:"2026-11-04",tipo:"collab",ed:"Cada fase do bebê",item:"Enfermeira Sandra e a extratora",parc:"@enf.sandracosta_chagas",quem:"Collab com a @enf.sandracosta_chagas. Ela com a extratora Hands Free.",tela:"amamentação e volta ao trabalho",
+  rot:[["fala","Sandra: \"A dúvida que mais recebo de mãe voltando ao trabalho é sobre extrair o leite.\""],["cena","Mostra a extratora Hands Free, sem fio, usada por baixo da roupa."],["fala","\"Você não precisa comprar: dá para alugar pelo período que precisar.\""]],
+  leg:"Voltando ao trabalho e preocupada com a amamentação? A enfermeira @enf.sandracosta_chagas mostra a extratora Hands Free (mãos livres) da Medela.\n\nNo clubkids Três Lagoas você aluga pelo período que precisar. Chama no WhatsApp.",
+  obs:"Tom educativo, sem indicação de produto como profissional de saúde."},
+ {d:"2026-11-06",tipo:"collab",ed:"Parceiras e famílias",item:"Como foi: Camila e o quadriciclo",parc:"@camilafalco",quem:"Collab com a Camila contando os 15 dias com o quadriciclo e o playground.",tela:"15 dias com o clubkids",
+  rot:[["fala","Camila: \"Devolvi hoje o quadriciclo e o playground. Vou contar como foi.\""],["cena","Melhores momentos das crianças brincando."],["fala","\"Valeu muito a pena. E já estou de olho no próximo.\""]],
+  leg:"15 dias, 2 brinquedos e muita diversão: a @camilafalco conta como foi alugar o quadriciclo elétrico e o playground do clubkids. 💛\n\nQuer testar também? Chama no WhatsApp."},
+ {d:"2026-11-08",tipo:"reels",ed:"A franqueada e a unidade",item:"Primeira semana",gravar:"2026-11-07",quem:"Você, em selfie.",tela:"obrigada, três lagoas",
+  rot:[["fala","\"Primeira semana do clubkids em Três Lagoas e eu só tenho a agradecer.\""],["cena","Itens saindo para entrega."],["fala","\"Os mais pedidos foram [itens]. Me conta: qual você quer testar?\""]],
+  leg:"Primeira semana do clubkids em Três Lagoas e eu só tenho a agradecer a cada família que confiou na gente. 💛\n\nOs mais pedidos foram [itens]. E você, qual quer testar? Me conta nos comentários."},
+ {d:"2026-11-09",tipo:"reels",ed:"Cada fase do bebê",item:"Balanços lado a lado",gravar:"2026-11-08",quem:"Você, mostrando os balanços.",tela:"qual balanço para qual bebê?",
+  rot:[["fala","\"Qual balanço é o certo para o seu bebê?\""],["cena","Joie Sansa, Nuna Leaf Grow e Ingenuity, um por vez, em movimento."],["fala","\"Me conta a idade do seu bebê que eu te indico.\""]],
+  leg:"Qual balanço é o certo para o seu bebê? Aqui em Três Lagoas temos Joie, Nuna e Ingenuity, cada um para uma fase.\n\nMe conta a idade do seu bebê no direct que eu te indico. 💛"},
+ {d:"2026-11-11",tipo:"collab",ed:"Cada fase do bebê",item:"Gracinha e a cadeira de alimentação",parc:"@gracinhamoriguti",quem:"Collab com a @gracinhamoriguti com a cadeira Jay Maxi-Cosi.",tela:"introdução alimentar: por onde começar?",
+  rot:[["fala","Gracinha: \"Introdução alimentar começa antes do prato: começa na cadeira certa.\""],["cena","Bebê sentado na cadeira de alimentação (com autorização dos pais)."],["fala","\"Pés apoiados, postura certa e a família à mesa junto.\""]],
+  leg:"Introdução alimentar começa antes do prato: começa na cadeira certa. A @gracinhamoriguti mostra a cadeira de alimentação Jay da Maxi-Cosi.\n\nNo clubkids Três Lagoas você aluga pelo tempo dessa fase. Chama no WhatsApp.",
+  obs:"Tom educativo, sem indicação de produto como profissional de saúde."},
+ {d:"2026-11-13",tipo:"reels",ed:"Como funciona e confiança",item:"Bastidor da higienização",gravar:"2026-11-12",quem:"Celular apoiado, gravando só as suas mãos. Sem fala, com música e texto na tela.",tela:"chega limpo? chega sim",
+  rot:[["cena","Mãos pegando o brinquedo. Texto: \"antes de ir para a sua casa\"."],["cena","Mãos higienizando peça por peça. Texto: \"cada peça é limpa e conferida\"."],["cena","Mãos embalando. Texto: \"embalado e pronto\"."]],
+  leg:"A pergunta que eu mais recebo: \"o brinquedo chega limpo?\" Chega sim. Cada item é higienizado, conferido peça por peça e embalado antes de ir para a próxima família.\n\nPeça pelo app, site ou WhatsApp. Link na bio."},
+ {d:"2026-11-15",tipo:"pasta",ed:"Brincar em casa",item:"Feriado: playground e cozinha",oque:"Vídeo do playground 3 torres ou da cozinha de madeira, da pasta da rede ou seu.",tela:"feriadão em casa",
+  leg:"Feriadão em casa? Playground com escorregador, cozinha de madeira, casinha... aqui em Três Lagoas você aluga e a diversão está garantida. Chama no WhatsApp."},
+ {d:"2026-11-16",tipo:"collab",ed:"Cada fase do bebê",item:"Dra. Desiré e o Pikler",parc:"@Dra.DesirePediatra",quem:"Collab com a Dra. Desiré com o triângulo Pikler (depois do termo assinado).",tela:"brincar livre",
+  rot:[["cena","Criança subindo no triângulo Pikler (com autorização dos pais)."],["fala","Dra. Desiré, em tom educativo: \"O brincar livre ajuda no equilíbrio, na coordenação e na confiança.\""],["fala","\"Aqui em casa a gente está testando o Pikler.\""]],
+  leg:"Brincar livre é coisa séria: equilíbrio, coordenação e confiança. A @Dra.DesirePediatra mostra o triângulo Pikler que está usando em casa.\n\nNo clubkids Três Lagoas você aluga pelo tempo da fase. Chama no WhatsApp.",
+  obs:"Tom educativo, sem \"recomendo como médica\"."},
+ {d:"2026-11-18",tipo:"reels",ed:"Brincar em casa",item:"Os elétricos",gravar:"2026-11-17",quem:"Você, mostrando cada carrinho.",tela:"qual elétrico seu filho escolheria?",
+  rot:[["fala","\"Qual desses o seu filho escolheria?\""],["cena","Jeep 2 lugares, quadriciclo UTV, Jipe 4 em 1 e Toyota Supra, um por vez, com farol aceso."],["fala","\"Antes de comprar de Natal, aluga e testa. Me chama no WhatsApp.\""]],
+  leg:"Jeep, quadriciclo, Jipe 4 em 1 ou Toyota Supra: qual o seu filho escolheria? 🚗\n\nAntes de comprar de Natal, aluga e testa. Se ele amar, você já sabe. Chama no WhatsApp para ver a disponibilidade."},
+ {d:"2026-11-20",tipo:"collab",ed:"Brincar em casa",item:"Camila e o Toyota Supra",parc:"@camilafalco",quem:"Collab com a Camila com o Toyota Supra.",tela:"testa antes de dar de natal",
+  rot:[["fala","Camila: \"Antes de dar um carrinho elétrico de Natal, eu testei.\""],["cena","Criança dirigindo o Supra (com autorização)."],["fala","\"Se ele amar, você já sabe. Se não, devolve.\""]],
+  leg:"Antes de dar o presente, testa! A @camilafalco está com o Toyota Supra elétrico do clubkids e conta como está sendo. 🎄\n\nAluga, testa e só depois decide. Chama no WhatsApp."},
+ {d:"2026-11-22",tipo:"reels",ed:"Parceiras e famílias",item:"Primeiras clientes",quem:"Você, juntando fotos e vídeos de clientes (só com autorização).",tela:"quem alugou, conta",
+  rot:[["cena","Sequência de fotos e vídeos de clientes com os itens."],["fala","\"Obrigada a cada família de Três Lagoas que já faz parte do clubkids.\""]],
+  leg:"Quem alugou, conta! Obrigada a cada família de Três Lagoas que já faz parte do clubkids. 💛\n\nQuer ser a próxima? Chama no WhatsApp.",
+  obs:"Só use imagem de cliente e de criança com autorização por escrito."},
+ {d:"2026-11-23",tipo:"collab",ed:"Cada fase do bebê",item:"Dra. Nayana e o berço portátil",parc:"@Dra.NayanaFante",quem:"Collab com a Dra. Nayana com o berço portátil Kubbie Sleep.",tela:"viagem de fim de ano com bebê",
+  rot:[["fala","Dra. Nayana, tom educativo: \"Viagem de fim de ano com bebê pede um lugar seguro para dormir.\""],["cena","Mostra o berço portátil montado."],["fala","\"Dá para alugar só pelo período da viagem.\""]],
+  leg:"Viagem de fim de ano com bebê? A @Dra.NayanaFante mostra o berço portátil Kubbie Sleep, que dá para alugar só pelo período da viagem.\n\nChama no WhatsApp e monte o seu kit viagem."},
+ {d:"2026-11-25",tipo:"reels",ed:"Black Friday",item:"Black Friday",quem:"A supervisão manda o roteiro quando a campanha fechar.",leg:BF,semTags:true},
+ {d:"2026-11-27",tipo:"rede",ed:"Black Friday",item:"Black Friday",oque:"Material da rede, quando a campanha fechar.",leg:BF,semTags:true},
+ {d:"2026-11-29",tipo:"rede",ed:"Black Friday",item:"Última chamada",oque:"Material da rede, quando a campanha fechar.",leg:BF,semTags:true},
+ {d:"2026-11-30",tipo:"reels",ed:"Brincar em casa",item:"Férias chegando",gravar:"2026-11-29",quem:"Você, mostrando a cama elástica e os playgrounds.",tela:"férias chegando. e agora?",
+  rot:[["fala","\"As férias estão chegando. E agora, como manter as crianças ocupadas?\""],["cena","Cama elástica, playground 3 torres, casinha."],["fala","\"Garante o seu antes que acabe. Me chama no WhatsApp.\""]],
+  leg:"As férias estão chegando e a pergunta é sempre a mesma: como manter as crianças ocupadas em casa? Cama elástica, playgrounds e casinha são os mais disputados.\n\nMe chama no WhatsApp para garantir o seu."}
+];
+
+const PARCEIRAS=[
+ {id:"camila",nome:"@camilafalco",tipo:"Influenciadora (maior retorno de seguidores)",agora:"Quadriciclo UTV + Playground com balanço, até ~03/11",prox:"Toyota Supra GT4 elétrico, 05/11 a 20/11",post:"Inauguração em collab (28/10); \"como foi\" (06/11); Supra para o Natal (20/11)"},
+ {id:"desire",nome:"@Dra.DesirePediatra",tipo:"Pediatra",agora:"Jeep 2 lugares + Playground Casinha Urso, até ~29/10",prox:"Triângulo Pikler, 02/11 a 17/11 (depois do termo assinado)",post:"Brincar livre e desenvolvimento motor (16/11), tom educativo"},
+ {id:"nayana",nome:"@Dra.NayanaFante",tipo:"Pediatra",agora:"Cama elástica Premium 1,40, até ~14/11",prox:"Berço portátil Kubbie Sleep, 16/11 a 30/11",post:"Cama elástica (30/10); sono seguro em viagem (23/11)"},
+ {id:"sandra",nome:"@enf.sandracosta_chagas",tipo:"Enfermeira (gestação e amamentação)",agora:"Sem item",prox:"Extratora Medela Hands Free, 29/10 a 13/11",post:"Amamentação e volta ao trabalho (04/11)"},
+ {id:"gracinha",nome:"@gracinhamoriguti",tipo:"Nutricionista",agora:"Sem item",prox:"Cadeira de alimentação Jay Maxi-Cosi, 03/11 a 18/11",post:"Introdução alimentar (11/11)"}
+];
+const SEMANAS=[
+ ["26/10 a 01/11 (inauguração)","Camila: collab no dia 28/10","Desiré e Nayana repostam a inauguração"],
+ ["02/11 a 08/11","Sandra: Reels da extratora","Camila mostra o último dia com o quadriciclo"],
+ ["09/11 a 15/11","Gracinha: introdução alimentar","Desiré com o Pikler"],
+ ["16/11 a 22/11","Camila: Toyota Supra para o Natal","Nayana com o berço"],
+ ["23/11 a 30/11","Desiré: resultado do Pikler","Black Friday da rede (em aberto)"],
+ ["Dezembro","Camila e Nayana: férias em casa","Gracinha: rotina das crianças nas férias"]
+];
+/* ações de parceria com data (entram no fazer hoje) */
+const ACOES_DATA=[
+ ["2026-10-26","p-ajuste","Reunião de inauguração com a supervisão (15h)","Pauta na aba reunião."],
+ ["2026-10-27","p-camila","Confirmar com a Camila o vídeo da inauguração em collab","Colorido, com ela falando e a criança brincando. Mensagem na aba parceiras."],
+ ["2026-10-27","p-termo","Resolver o termo de permuta da Dra. Desiré (não assinado no sistema)","Antes de qualquer nova entrega."],
+ ["2026-10-28","p-repost","Pedir para Desiré, Nayana, Sandra e Gracinha repostarem a inauguração",""],
+ ["2026-10-29","p-sandra","Entregar a extratora Hands Free para a Enfermeira Sandra (@enf.sandracosta_chagas)","Combinar o Reels de 04/11 em collab."],
+ ["2026-10-29","p-desire1","Recolher o Jeep e o playground da Dra. Desiré","Pedir 1 Story contando como foi."],
+ ["2026-11-02","p-desire2","Entregar o triângulo Pikler para a Dra. Desiré","Só com o termo assinado. Combinar o Reels de 16/11."],
+ ["2026-11-03","p-gracinha","Entregar a cadeira de alimentação para a Gracinha","Combinar o Reels de 11/11."],
+ ["2026-11-03","p-camila2","Recolher o quadriciclo e o playground da Camila","Combinar o \"como foi\" de 06/11."],
+ ["2026-11-05","p-camila3","Entregar o Toyota Supra para a Camila","Combinar o Reels de 20/11."],
+ ["2026-11-14","p-nayana1","Recolher a cama elástica da Dra. Nayana","Pedir 1 Story contando como foi."],
+ ["2026-11-16","p-nayana2","Entregar o berço portátil para a Dra. Nayana","Combinar o Reels de 23/11."],
+ ["2026-11-24","p-dez","Mandar para a supervisão os números de novembro","Seguidores, visualizações, contatos e pedidos por parceira."]
+];
+const EDITORIAL=[
+ ["Brincar em casa","30%","Gastar energia sem sair de casa; férias; presente de Natal testado antes","Playgrounds Freso, cama elástica, casinha, cozinha, Jeep, quadriciclo, Toyota Supra"],
+ ["Cada fase do bebê","25%","O item certo para cada idade, sem comprar o que dura poucos meses","Balanços Joie e Nuna, tapetes Tiny Love, jumperoo e centros Skip Hop, Pikler, cubos Janod"],
+ ["Parceiras e famílias","20%","Quem já usou e recomenda: as 5 parceiras e as primeiras clientes","O item que estiver com cada uma"],
+ ["Como funciona e confiança","15%","App, site ou WhatsApp; higienização; entrega em até 3 dias","Qualquer item saindo para entrega"],
+ ["A franqueada e a unidade","10%","A Tatiane, quem cuida do clubkids em Três Lagoas; o dia a dia","Todos"]
+];
+/* stories por dia da semana: [manhã, tarde, noite] */
+const STORIES={
+ 0:[["Vídeo de 5 s de um brinquedo pronto","Caixinha: \"o que vocês fizeram hoje?\"","Repost do post do dia + link do WhatsApp"]],
+ 1:[["Selfie: \"bom dia, Três Lagoas! semana começando\"","Enquete: \"compraria ou alugaria um playground?\"","Repost do post do dia + link do WhatsApp"]],
+ 2:[["Vídeo de 5 s da prateleira","Caixinha: \"qual a idade do seu filho? te indico o brinquedo da fase\"","Responder 2 perguntas da caixinha com o item indicado"]],
+ 3:[["Item saindo para entrega","Barra de emoji 😍 num elétrico","Repost do post do dia + link do WhatsApp"]],
+ 4:[["Bastidor: item sendo higienizado","Quiz: \"comprar ou alugar um balanço de bebê por 3 meses?\"","Repost de cliente ou parceira (com autorização)"]],
+ 5:[["Selfie: \"sextou, o que vem para o fim de semana?\"","Enquete: \"fim de semana em casa ou viagem?\"","Repost do post do dia + link do WhatsApp"]],
+ 6:[["Vídeo da higienização","Enquete: \"sabia que tudo chega higienizado?\"","Repost de parceira"]]
+};
+const MSG_PARC="Oi, [nome]! Aqui é a Tatiane do clubkids Três Lagoas. Obrigada demais pela parceria na inauguração! Separei o [item] para você usar de [data] a [data]. A ideia é um Reels em collab com a gente e 3 Stories mostrando o dia a dia com ele, marcando @clubkidstreslagoas. Posso agendar a entrega?";
+const MSG_LEAD="Oi, [nome]! Que bom te ver por aqui. Viu a [parceira] com o [item]? Ele está disponível, e tenho outros para a fase do seu filho. Qual a idade dele? Te mando as opções pelo app.";
+const MSG_DEVOL="Oi, [nome]! Como foram esses dias com o [item]? Se puder, posta 1 Story contando como foi e marca @clubkidstreslagoas. Ajuda demais quem está conhecendo o clubkids agora. 💛";
+const PAUTA=[
+ ["pauta1","Post de inauguração (28/10): quem grava e quais parceiras repostam","Sugestão: collab com a Camila, colorido, com ela falando."],
+ ["pauta2","Números do que cada parceira já postou","Visualizações, seguidores novos e contatos no WhatsApp."],
+ ["pauta3","Fechar o rodízio de itens entre as parceiras","Aba parceiras."],
+ ["pauta4","O mínimo de cada permuta: 1 Reels ou collab + 3 Stories","Sempre marcando @clubkidstreslagoas."],
+ ["pauta5","Código de indicação por parceira (\"vim pela Camila\")","Perguntar \"como nos conheceu?\" em todo pedido."],
+ ["pauta6","Quem grava os vídeos da unidade e em quais dias","Sugestão: terça e quinta."],
+ ["pauta7","Termo de permuta da Dra. Desiré (não assinado)","Resolver antes de qualquer nova entrega."],
+ ["pauta8","Parar de seguir perfis em massa e responder tudo no mesmo dia","Hoje: segue 363, é seguida por 234."]
+];
+
+/* ===== estado (salvo neste aparelho) ===== */
+const CHAVE="clubkids-treslagoas-v1";
+let dados={}; try{dados=JSON.parse(localStorage.getItem(CHAVE)||"{}")}catch(e){dados={}}
+const salvar=()=>{try{localStorage.setItem(CHAVE,JSON.stringify(dados))}catch(e){}};
+const st=id=>(dados[id]||{}).s||"inicio";
+const obs=id=>(dados[id]||{}).o||"";
+const NOME_ST={inicio:"início",andamento:"em andamento",feito:"feito",nao:"não concluído"};
+
+/* ===== utilidades ===== */
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const iso=dt=>`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;
+const deIso=s=>{const[a,m,d]=s.split("-").map(Number);return new Date(a,m-1,d)};
+const SEM=["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
+const dataLonga=s=>{const dt=deIso(s);return `${SEM[dt.getDay()]}, ${String(dt.getDate()).padStart(2,"0")}/${String(dt.getMonth()+1).padStart(2,"0")}`};
+const ddmm=s=>s.slice(8,10)+"/"+s.slice(5,7);
+const NOME_TIPO={reels:"Reels gravado",collab:"Reels em collab",pasta:"Vídeo da pasta",rede:"Material da rede"};
+const ETQ={reels:"lar",collab:"ve",pasta:"az",rede:"az"};
+const pid=p=>"post-"+p.d;
+const leg=p=>p.semTags?p.leg:p.leg+"\n\n"+TAGS;
+
+function tk(id,titulo,sub,extra=""){
+  const s=st(id);
+  return `<div class="tarefa"><b>${titulo}</b>${sub?`<p class="info">${sub}</p>`:""}${extra}
+  <div class="st" role="group" aria-label="status">${["inicio","andamento","feito","nao"].map(v=>`<button type="button" data-id="${id}" data-v="${v}" aria-pressed="${s===v}">${NOME_ST[v]}</button>`).join("")}</div>
+  <details class="obs"${obs(id)?" open":""}><summary>observação${s==="nao"?" (por que não concluiu?)":""}</summary><textarea data-obs="${id}" placeholder="Escreva aqui">${esc(obs(id))}</textarea></details></div>`;
+}
+const caixa=(txt,rot)=>`<div class="copiar"><small class="info">${rot}</small>\n${esc(txt)}<button type="button" data-copiar>copiar</button></div>`;
+
+function conteudoPost(p){
+  return `<div class="post ${p.tipo==="pasta"||p.tipo==="rede"?"pasta":p.tipo==="collab"?"parc":""}">
+   <span class="etq ${ETQ[p.tipo]}">${NOME_TIPO[p.tipo]}</span><span class="etq">${esc(p.ed)}</span>${p.parc?`<span class="etq ro">${esc(p.parc)}</span>`:""}
+   <h3>${esc(p.item)}</h3>
+   <p class="info">Sai ${dataLonga(p.d)}${p.gravar?` · gravar ${dataLonga(p.gravar)}`:""}</p>
+   ${p.quem?`<p><b>Quem grava:</b> ${esc(p.quem)}</p>`:""}
+   ${p.oque?`<p><b>O que usar:</b> ${esc(p.oque)} <a href="${PASTA}" target="_blank" rel="noopener">abrir a pasta da rede</a></p><p class="info">Vídeo de outra unidade nunca é apresentado como de Três Lagoas. Tem vídeo seu do mesmo tema? Use o seu.</p>`:""}
+   ${p.tela?caixa(p.tela,"texto na tela, no primeiro segundo"):""}
+   ${p.rot?`<small class="info">roteiro (pode falar com as suas palavras)</small><ol class="rot">${p.rot.map(([k,t])=>`<li>${k==="cena"?"<i>"+esc(t)+"</i>":esc(t)}</li>`).join("")}</ol>`:""}
+   ${caixa(leg(p),"legenda")}
+   ${p.obs?`<p class="info">⚠ ${esc(p.obs)}</p>`:""}
+  </div>`;
+}
+
+/* ===== tarefas do dia ===== */
+function tarefasDoDia(s){
+  const dt=deIso(s), l=[];
+  POSTS.filter(p=>p.gravar===s).forEach(p=>l.push({id:pid(p)+"-gravar",nome:"Gravar: "+p.item}));
+  POSTS.filter(p=>p.d===s).forEach(p=>l.push({id:pid(p),nome:"Post do dia: "+p.item}));
+  ACOES_DATA.filter(a=>a[0]===s).forEach(a=>l.push({id:a[1],nome:a[2]}));
+  ["manha","tarde","noite"].forEach(k=>l.push({id:s+"-"+k,nome:"Story "+k}));
+  l.push({id:s+"-msgs",nome:"Responder direct, comentários e WhatsApp"});
+  l.push({id:s+"-repost",nome:"Repostar toda menção de parceira ou cliente"});
+  return l;
+}
+let dia=(()=>{const h=new Date();const s=iso(h);return (h<INICIO)?iso(INICIO):(h>FIM?iso(FIM):s)})();
+let aba="hoje";
+
+function viewHoje(){
+  const ts=tarefasDoDia(dia), f=ts.filter(t=>st(t.id)==="feito").length;
+  const dt=deIso(dia), stories=STORIES[dt.getDay()][0];
+  let h=`<div class="dia"><button class="seta" data-ir="-1" ${dia<=iso(INICIO)?"disabled":""} aria-label="dia anterior">‹</button>
+   <div style="text-align:center"><h1>${dataLonga(dia)}</h1><small class="info">${dia===iso(new Date())?"hoje":""}</small></div>
+   <button class="seta" data-ir="1" ${dia>=iso(FIM)?"disabled":""} aria-label="próximo dia">›</button></div>
+   <div class="barra"><i style="width:${Math.round(f/ts.length*100)}%"></i></div><p class="info" style="text-align:center">${f} de ${ts.length} feitas</p>`;
+  if(dia==="2026-10-28") h+=`<section class="cartao aviso"><h2>dia da inauguração 🎉</h2><p class="info">Post em collab com a Camila, Stories o dia todo e responder todo mundo no mesmo dia.</p></section>`;
+  POSTS.filter(p=>p.gravar===dia).forEach(p=>{h+=`<section class="cartao"><h2>gravar hoje</h2><p class="info">Este vídeo sai ${dataLonga(p.d)}. Grave e mande para a supervisão pelo WhatsApp como documento.</p>${conteudoPost(p)}${tk(pid(p)+"-gravar","Gravei e mandei","")}</section>`});
+  POSTS.filter(p=>p.d===dia).forEach(p=>{h+=`<section class="cartao"><h2>post de hoje no feed</h2>${conteudoPost(p)}${tk(pid(p),"Postei (ou conferi se saiu) e compartilhei nos Stories","")}</section>`});
+  const ac=ACOES_DATA.filter(a=>a[0]===dia);
+  if(ac.length) h+=`<section class="cartao"><h2>parcerias e combinados de hoje</h2>${ac.map(a=>tk(a[1],esc(a[2]),esc(a[3]))).join("")}</section>`;
+  h+=`<section class="cartao"><h2>stories de hoje</h2><p class="info">Tudo pronto: é só seguir. Se quiser fazer outro ou melhorar, fique à vontade.</p>
+   ${tk(dia+"-manha","Manhã (presença)",esc(stories[0]))}${tk(dia+"-tarde","Tarde (conversa)",esc(stories[1]))}${tk(dia+"-noite","Noite (pedido)",esc(stories[2]))}</section>
+   <section class="cartao"><h2>todo dia</h2>${tk(dia+"-msgs","Responder direct, comentários e WhatsApp","No mesmo dia. Perguntar \"como nos conheceu?\" em todo pedido.")}${tk(dia+"-repost","Repostar toda menção de parceira ou cliente","Com agradecimento.")}</section>`;
+  return h;
+}
+function chip(p){const s=st(pid(p));return s==="inicio"?`<span class="chip">${p.gravar?"a gravar":"pronto"}</span>`:`<span class="chip ${s}">${NOME_ST[s]}</span>`}
+function viewCrono(){
+  const feitos=POSTS.filter(p=>st(pid(p))==="feito").length;
+  return `<h1>cronograma</h1><p class="info">${feitos} de ${POSTS.length} posts publicados. Toque num post para ver roteiro e legenda. Sem arte: todo post é vídeo gravado, collab com parceira ou vídeo da pasta da rede.</p>
+  <section class="cartao">${POSTS.map((p,i)=>`<details><summary class="linha-post"><span class="d">${ddmm(p.d)}<small>${SEM[deIso(p.d).getDay()].slice(0,3)}</small></span><span style="flex:1"><b>${esc(p.item)}</b><br><small class="info">${NOME_TIPO[p.tipo]} · ${esc(p.ed)}</small></span>${chip(p)}</summary>${conteudoPost(p)}${tk(pid(p),"Publicado","")}</details>`).join("")}</section>
+  <section class="cartao"><h2>dezembro em linhas gerais</h2><ul><li>Semanas 1 e 2: presente de Natal testado antes (elétricos e playgrounds), com a Camila e a Dra. Desiré.</li><li>Semana 3: viagem de fim de ano (cadeira para auto, carrinho, berço portátil), com a Dra. Nayana.</li><li>Semana 4: férias em casa, com a Gracinha e a Sandra.</li><li>Toda semana: 1 collab com parceira + 3 posts da unidade.</li></ul><p class="info">Detalhado na última semana de novembro, com os números na mão.</p></section>`;
+}
+function viewParceiras(){
+  return `<h1>parceiras</h1><p class="info">Rodízio de itens: cada parceira fica com um item ligado ao assunto dela e, quando devolve, passa a vez. Assim o clubkids aparece em algum perfil parceiro toda semana.</p>
+  ${PARCEIRAS.map(p=>`<section class="cartao"><h2>${esc(p.nome)}</h2><p class="info">${esc(p.tipo)}</p><p><b>Com ela agora:</b> ${esc(p.agora)}<br><b>Próximo item:</b> ${esc(p.prox)}<br><b>O que posta:</b> ${esc(p.post)}</p>${tk("plano-parc-"+p.id,"Rodízio combinado com ela","")}</section>`).join("")}
+  <section class="cartao"><h2>uma parceira em destaque por semana</h2><div class="tabela"><table><thead><tr><th>Semana</th><th>Destaque</th><th>Apoio nos Stories</th></tr></thead><tbody>${SEMANAS.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</tbody></table></div></section>
+  <section class="cartao"><h2>o mínimo de cada permuta</h2><ul><li>1 Reels ou collab no feed + 3 Stories, marcando @clubkidstreslagoas.</li><li>Post de parceira sai como <b>collab</b>, não só repost.</li><li>Código de indicação com o nome dela (\"vim pela Camila\").</li><li>Termo de permuta assinado antes da entrega.</li><li>Ao devolver: 1 Story contando como foi.</li></ul>
+  <p class="info">⚠ Pediatras, enfermeira e nutricionista: conteúdo educativo, falado como mãe ou como quem orienta. Nunca \"como médica, recomendo este produto\". Criança só com autorização dos pais (ECA Digital).</p></section>
+  <section class="cartao"><h2>mensagens prontas</h2>${caixa(MSG_PARC,"para combinar o rodízio")}${caixa(MSG_DEVOL,"quando a parceira devolver")}${caixa(MSG_LEAD,"para quem chegar pelas parceiras")}</section>`;
+}
+function viewGuia(){
+  return `<h1>guia</h1>
+  <section class="cartao"><h2>stories todo dia</h2><div class="tabela"><table><thead><tr><th>Hora</th><th>Objetivo</th><th>Exemplo</th></tr></thead><tbody>
+  <tr><td>Manhã</td><td>Presença</td><td>Item saindo para entrega: \"bom dia, Três Lagoas!\"</td></tr>
+  <tr><td>Tarde</td><td>Conversa</td><td>Enquete, caixinha ou quiz</td></tr>
+  <tr><td>Noite</td><td>Pedido</td><td>Repost do post do dia ou da parceira + link do WhatsApp</td></tr></tbody></table></div></section>
+  <section class="cartao"><h2>gravar sozinha</h2><ol><li>Celular em pé, na altura dos olhos.</li><li>Luz de frente para o rosto (de frente para a janela).</li><li>Uma frase por vez, em blocos de 5 a 10 segundos.</li><li>2 segundos parada antes e depois de falar, para facilitar o corte.</li><li>Mande o vídeo pelo WhatsApp como documento, para não perder qualidade.</li></ol></section>
+  <section class="cartao"><h2>postar em collab</h2><ol><li>Ao postar o Reels, toque em \"marcar pessoas\".</li><li>Toque em \"convidar colaborador\" e escolha a parceira.</li><li>Ela aceita e o post aparece no perfil das duas.</li></ol></section>
+  <section class="cartao"><h2>regras de toda peça</h2><ul><li>Sempre \"o clubkids\", em minúsculo.</li><li>Sem arte própria: vídeo gravado, collab ou vídeo da pasta da rede.</li><li>Unidade 100% digital: pedido pelo app, site ou WhatsApp. Nunca endereço, visita ou \"venha conhecer\".</li><li>Entrega em até 3 dias, conforme rota. Nunca prometer data em campanha.</li><li>Toda oferta: prazo da campanha e \"promoções não acumulativas\".</li><li>Criança só com autorização dos pais.</li><li>Dados de parceiras e clientes (CPF, endereço, telefone) nunca em post ou grupo.</li><li>Nada é publicado sem aprovação da supervisão.</li></ul></section>`;
+}
+function viewReuniao(){
+  return `<h1>reunião de inauguração</h1><p class="info">26/10/2026, 15h, com a supervisão.</p><section class="cartao">${PAUTA.map(p=>tk("plano-reuniao-"+p[0],esc(p[1]),esc(p[2]))).join("")}</section>`;
+}
+function viewPlano(){
+  return `<h1>plano de comunicação</h1><p class="info">27/10 a dezembro de 2026</p>
+  <section class="cartao"><h2>o objetivo</h2><p>Não perder o ritmo depois da inauguração: uma parceira em destaque toda semana, 4 posts por semana no perfil, Stories todo dia e toda pessoa que chegar pelas parceiras atendida no mesmo dia.</p></section>
+  <section class="cartao"><h2>como está o perfil (26/10)</h2><ul><li>16 posts, 234 seguidores, segue 363.</li><li>Feed quase todo de arte da rede; só 1 post com gente real (a foto da equipe).</li><li>Reels com pessoas deram mais visualizações: Tatiane 184, Dra. Nayana 162 e 142, Camila 128.</li><li>Parceiras entram só como repost: precisa virar collab.</li><li>A Tatiane ainda não se apresentou: é o post de 27/10.</li></ul></section>
+  <section class="cartao"><h2>linha editorial</h2><div class="tabela"><table><thead><tr><th>Editoria</th><th>Peso</th><th>O que mostra</th><th>Itens</th></tr></thead><tbody>${EDITORIAL.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("")}</tbody></table></div>
+  <p class="info">Frases que funcionam: \"aluga pelo tempo da fase\", \"testa antes de comprar\", \"chega higienizado na sua casa\", \"peça pelo app, site ou WhatsApp\".</p></section>
+  <section class="cartao"><h2>metas dos primeiros 60 dias</h2><ul><li>Nenhuma semana sem post de parceira.</li><li>4 posts por semana no perfil da unidade.</li><li>Stories 7 de 7 dias.</li><li>Seguidores crescendo pelas collabs, sem seguir perfis em massa.</li><li>Anotar em todo pedido: \"como nos conheceu?\"</li></ul></section>`;
+}
+
+/* ===== sincronização com o CRM (link com ?k=) ===== */
+const TOKEN=new URLSearchParams(location.search).get("k")||"";
+const RPC="https://bqspprdmvludxeokcyjp.supabase.co/rest/v1/rpc/";
+const ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxc3BwcmRtdmx1ZHhlb2tjeWpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4NTkzMzgsImV4cCI6MjA5NjQzNTMzOH0.AgaMkfIgX4yB5rQ7M-Em5DG3_ONZAQwtKRQd_rz3utY";
+const syncLabel=t=>{const e=document.getElementById("sync");if(e)e.textContent=t};
+const diaNum=s=>{const m=Number(s.slice(5,7)),d=Number(s.slice(8,10));return m===11?d:(m===10?0:null)};
+const INDICE={};
+function indexar(){for(let dt=new Date(INICIO);dt<=FIM;dt.setDate(dt.getDate()+1)){const s=iso(dt);tarefasDoDia(s).forEach(t=>INDICE[t.id]={nome:t.nome,dia:diaNum(s),data:s})}
+ PAUTA.forEach(p=>INDICE["plano-reuniao-"+p[0]]={nome:p[1],dia:null});PARCEIRAS.forEach(p=>INDICE["plano-parc-"+p.id]={nome:"Rodízio combinado: "+p.nome,dia:null});}
+async function rpc(m,b){const r=await fetch(RPC+m,{method:"POST",headers:{apikey:ANON,Authorization:"Bearer "+ANON,"Content-Type":"application/json"},body:JSON.stringify(b)});if(!r.ok)throw Error(await r.text());return r.json()}
+let fila={},timer;
+function enfileirar(id){if(!TOKEN)return;fila[id]=1;clearTimeout(timer);timer=setTimeout(enviar,700)}
+async function enviar(){const ids=Object.keys(fila);fila={};if(!ids.length)return;
+ const rows=ids.map(id=>({item_id:id,status:st(id),obs:obs(id),nome:(INDICE[id]||{}).nome||id,dia:(INDICE[id]||{}).dia??null}));
+ const nums=new Set(ids.map(id=>(INDICE[id]||{}).dia).filter(n=>n!==null&&n!==undefined));
+ nums.forEach(n=>{let f=0,t=0;Object.entries(INDICE).forEach(([id,v])=>{if(v.data&&v.dia===n){t++;if(st(id)==="feito")f++}});rows.push({item_id:"_dia:"+n,dia:n,nome:"Resumo do dia",status:"inicio",valor:f+"/"+t})});
+ try{await rpc("plano_gravar",{p_token:TOKEN,p_itens:rows});syncLabel("● salvo no CRM")}catch(e){syncLabel("⚠ não salvou: confira a internet");ids.forEach(i=>fila[i]=1)}}
+async function carregar(){if(!TOKEN){syncLabel("salvo só neste aparelho");return}
+ syncLabel("conectando ao CRM…");
+ try{const r=await rpc("plano_ler",{p_token:TOKEN});if(!r)throw Error("link");(r.itens||[]).forEach(i=>{if(!i.item_id.startsWith("_"))dados[i.item_id]={s:i.status||"inicio",o:i.obs||""}});salvar();syncLabel("● conectado ao CRM");render()}
+ catch(e){syncLabel("⚠ sem conexão com o CRM: o que marcar fica neste aparelho")}}
+const app=document.getElementById("app");
+function render(){
+  document.querySelectorAll("#menu button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.aba===aba));
+  app.innerHTML=({hoje:viewHoje,crono:viewCrono,parceiras:viewParceiras,guia:viewGuia,reuniao:viewReuniao,plano:viewPlano}[aba])();
+}
+document.addEventListener("click",e=>{
+  const m=e.target.closest("#menu button"); if(m){aba=m.dataset.aba;render();window.scrollTo(0,0);return}
+  const b=e.target.closest(".st button"); if(b){dados[b.dataset.id]={...(dados[b.dataset.id]||{}),s:b.dataset.v};salvar();enfileirar(b.dataset.id);const g=b.parentElement;g.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));if(aba==="hoje")render();return}
+  const ir=e.target.closest("[data-ir]"); if(ir){const dt=deIso(dia);dt.setDate(dt.getDate()+Number(ir.dataset.ir));dia=iso(dt);render();window.scrollTo(0,0);return}
+  const c=e.target.closest("[data-copiar]"); if(c){const t=c.parentElement.childNodes[2]?.textContent?.trim()||"";const txt=c.parentElement.innerText.replace(/^.*\n/,"").replace(/copiar$/,"").trim();(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{c.textContent="copiado ✓";setTimeout(()=>c.textContent="copiar",1500)}).catch(()=>{c.textContent="selecione e copie"});}
+});
+document.addEventListener("input",e=>{const t=e.target.closest("[data-obs]");if(t){dados[t.dataset.obs]={...(dados[t.dataset.obs]||{}),o:t.value};salvar();enfileirar(t.dataset.obs)}});
+indexar();render();carregar();
+</script>
+</body>
+</html>

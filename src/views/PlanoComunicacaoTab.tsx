@@ -5,7 +5,7 @@ import { btnSt, inputSt, labelSt } from "../lib/styles";
 import { sb } from "../lib/supabase";
 
 // Páginas de franqueada já publicadas em /public/plano/<slug>/
-const PAGINAS = ["sinop", "blumenau"];
+const PAGINAS = ["sinop", "blumenau", "treslagoas"];
 
 const ST: Record<string, { label: string; color: string; bg: string }> = {
   inicio: { label: "Início", color: C.textMuted, bg: C.inset },
