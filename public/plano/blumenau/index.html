@@ -156,11 +156,7 @@ body{background:var(--fundo);color:var(--ck-black)}.topo{background:var(--ck-bla
   <div class="topo-in">
     <div class="marca"><div class="official-logo"><img src="/brand/logo-cream.png" alt="clubkids" width="8000" height="3355"></div><span>FRANCHISING</span></div><div class="unidade"><small>ACOMPANHAMENTO DA UNIDADE</small><strong>Blumenau <span>SC</span></strong><p>Ivete · Franqueada</p></div>
     <div class="abas" role="group" aria-label="seções">
-      <button type="button" data-aba="gestao" aria-pressed="false">visão da gestão</button><button type="button" data-aba="reuniao" aria-pressed="false">reunião</button>
-      <button type="button" data-aba="plano" aria-pressed="false">plano</button>
-      <button type="button" data-aba="materiais" aria-pressed="false">materiais</button><button type="button" data-aba="semanal" aria-pressed="false">resumo semanal</button><button type="button" data-aba="guia" aria-pressed="false">guia</button>
-      <button type="button" data-aba="crono" aria-pressed="false">cronograma</button>
-      <button type="button" data-aba="hoje" aria-pressed="true">fazer hoje</button>
+      <button type="button" data-aba="hoje" aria-pressed="true">fazer hoje</button><button type="button" data-aba="crono" aria-pressed="false">cronograma</button><button type="button" data-aba="guia" aria-pressed="false">guia</button><button type="button" data-aba="semanal" aria-pressed="false">resumo semanal</button><button type="button" data-aba="reuniao" aria-pressed="false">reunião</button><button type="button" data-aba="plano" aria-pressed="false">plano</button><button type="button" data-aba="materiais" aria-pressed="false">materiais</button><button type="button" data-aba="gestao" aria-pressed="false">visão da gestão</button>
     </div>
   </div>
 <div class="sidebar-foot"><b>Juntos, a gente faz acontecer.</b><p>clubkids franchising<br>Plano nov/2026 – jan/2027</p><a href="/" target="_top">Acessar a gestão</a></div></header><div class="workspace-top"><span>Plano de ação <b>/ Blumenau</b></span><span id="sync" role="status" aria-live="polite">Conectando…</span></div><section class="intro"><div><span class="eyebrow">COMBINADOS QUE VIRAM AÇÃO</span><h1>Um passo por dia.<br><em>Uma unidade mais forte.</em></h1><p>Execução da Ivete, com a gestão de franquias por perto.</p></div><div class="plan-stamp"><span>PLANO DE COMUNICAÇÃO</span><b>90 dias</b><small>novembro 2026 → janeiro 2027</small></div></section><section id="overview" class="overview" aria-label="Resumo de execução"></section>
@@ -336,14 +332,15 @@ const CURTO = ["dom","seg","ter","qua","qui","sex","sáb"];
 const UNI = {cidade:"Blumenau", franqueada:"Ivete", supervisora:"Ivanise"};
 const LINK_APP = "https://clubkidsoficial.com.br/blumenau";
 const TAGS = "#clubkidsblumenau #blumenau #maternidade #aluguelinfantil";
-const BF = "Em aberto: a Black Friday entra quando a rede fechar a campanha. A Ivanise manda a peça e a legenda.";
+const BF = "Em aberto: a Black Friday entra quando a rede fechar a campanha. A Ivanise usa o material da rede e manda a legenda.";
 const POSTS = [
-  {dia:1, hora:"10h", tipo:"Arte", tema:"2 anos", item:"2 anos em Blumenau", gravar:null,
+  {dia:1, hora:"10h", tipo:"Reaproveitar", tema:"2 anos", item:"2 anos em Blumenau", gravar:null, pasta:"perfil",
+   oque:"Uma foto real sua com os itens, que já está no seu celular ou no perfil. Sem arte: a foto como ela é.",
    legenda:"Há 2 anos a gente cuida da infância de Blumenau, um brinquedo de cada vez. Obrigada a cada família que confia na gente, indica para uma amiga e deixa o clubkids fazer parte de tantos momentos. Que venham muitos anos juntos.", tags:"#clubkidsblumenau #blumenau",
-   obs:"Arte feita pela Ivanise com a sua foto. Você só compartilha nos Stories."},
-  {dia:2, hora:"12h", tipo:"Carrossel", tema:"Comprar ou alugar", item:"Comprar ou alugar?", gravar:null,
-   slides:["Capa: \"comprar ou alugar?\"","Jumperoo: usado por poucos meses","Mamaroo: os primeiros meses","Berço portátil: viagens e visitas","\"aqui em Blumenau você aluga pelo tempo da fase\""],
-   legenda:"Tem item que o bebê usa por poucos meses e depois fica ocupando espaço em casa. Separei 5 que valem mais a pena alugar do que comprar. Salva para lembrar e manda para uma amiga grávida.", tags:"#clubkidsblumenau #blumenau #enxoval"},
+   obs:"Mande para a Ivanise até 29/10 a foto que você mais gosta. Você só compartilha nos Stories."},
+  {dia:2, hora:"12h", tipo:"Reaproveitar", tema:"Comprar ou alugar", item:"Comprar ou alugar?", gravar:null, pasta:"enxoval",
+   oque:"Um vídeo da pasta \"Como economizar no enxoval\".", tela:"comprar ou alugar?",
+   legenda:"Tem item que o bebê usa por poucos meses e depois fica ocupando espaço em casa: jumperoo, Mamaroo, berço portátil, tapete de atividades, bebê conforto. Aqui em Blumenau você aluga pelo tempo da fase. Salva para lembrar e manda para uma amiga grávida.", tags:"#clubkidsblumenau #blumenau #enxoval"},
   {dia:4, hora:"19h", tipo:"Reels", tema:"Brinquedo da semana", item:"Jumper Joyful", gravar:-2,
    quem:"Grave até 29/10, antes da viagem. Em selfie, ao lado do jumper (ou a Clara segura o celular, se puder).",
    tela:"seu bebê já quer pular o tempo todo?",
@@ -354,12 +351,12 @@ const POSTS = [
    tela:"prazer, eu cuido dos brinquedos dos seus filhos",
    roteiro:[["fala","\"Oi, Blumenau! Eu sou a Ivete e há 2 anos cuido do clubkids aqui na cidade.\""],["fala","\"Aqui a família aluga brinquedos e itens de bebê para cada fase, sem precisar comprar tudo.\""],["fala","\"Tudo sai higienizado e chega na sua casa.\""],["fala","\"Me segue e me chama no direct. Vou adorar te ajudar a escolher.\""]],
    legenda:"Prazer, eu sou a Ivete, a franqueada do clubkids Blumenau. Há 2 anos eu ajudo as famílias da cidade a terem o brinquedo certo para cada fase, sem gastar com o que vai ser usado por poucos meses.\n\nTem dúvida sobre qual item serve para o seu filho? Me chama no direct que eu te ajudo pessoalmente.", tags:"#clubkidsblumenau #blumenau #maemblumenau #maternidade"},
-  {dia:8, hora:"12h", tipo:"Carrossel", tema:"Viagem", item:"Vai viajar no fim do ano?", gravar:null,
-   slides:["Capa: \"vai viajar no fim do ano?\"","Cadeira para auto","Carrinho de passeio","Berço portátil","\"alugue só pelo período da viagem\""],
+  {dia:8, hora:"12h", tipo:"Reaproveitar", tema:"Viagem", item:"Vai viajar no fim do ano?", gravar:null, pasta:"viagem",
+   oque:"Um vídeo da pasta \"Viagem\" (cadeirinha, carrinho, berço portátil).", tela:"vai viajar no fim do ano?",
    legenda:"Viagem com criança pede cadeirinha, carrinho, berço... e não dá para comprar tudo só para alguns dias. Aqui no clubkids Blumenau você aluga pelo período da viagem. Chama no WhatsApp e monte o seu kit.", tags:"#clubkidsblumenau #blumenau #viagemcombebe"},
-  {dia:9, hora:"12h", tipo:"Carrossel", tema:"Como alugar", item:"Alugar é simples", gravar:null,
-   slides:["Capa: \"alugar é simples\"","Escolha pelo site, app ou WhatsApp","Escolha o tempo de aluguel","Receba em casa, higienizado","\"quando a fase passar, é só devolver ou renovar\""],
-   legenda:"Muita mãe me pergunta como funciona. É simples assim: escolhe, recebe em casa e, quando a fase passar, devolve ou renova. Ficou alguma dúvida? Me chama no direct.", tags:"#clubkidsblumenau #blumenau"},
+  {dia:9, hora:"12h", tipo:"Reaproveitar", tema:"Como alugar", item:"Alugar é simples", gravar:null, pasta:"sobre",
+   oque:"Um vídeo da pasta \"Sobre o clubkids\" que mostre como funciona.", tela:"alugar é simples",
+   legenda:"Muita mãe me pergunta como funciona. É simples assim: escolhe pelo site, app ou WhatsApp, recebe em casa higienizado e, quando a fase passar, devolve ou renova. Ficou alguma dúvida? Me chama no direct.", tags:"#clubkidsblumenau #blumenau"},
   {dia:11, hora:"19h", tipo:"Reels", tema:"Higienização", item:"Bastidores da higienização", gravar:10,
    quem:"Celular apoiado gravando só as suas mãos (ou a Clara grava). Você não precisa falar: vai com música e texto na tela.",
    tela:"a pergunta que mais recebo: chega limpo?",
@@ -370,12 +367,12 @@ const POSTS = [
    tela:"comprar ou alugar um carro elétrico?",
    roteiro:[["fala","Selfie, ao lado do Jaguar: \"Pensando em dar um carrinho elétrico de Natal? Faz essa conta comigo.\""],["fala","\"Comprar um desses custa [preço de compra]. Alugar por 7 dias aqui em Blumenau sai por [preço do aluguel no app].\" (Texto na tela com os dois valores.)"],["cena","Grave a tela do celular fazendo o pedido do Jaguar no app, do item até o carrinho de compras."],["cena","Criança brincando no Jaguar, só com autorização dos pais. Pode ser vídeo de cliente que autorizou."],["fala","\"Testa antes, aluga pelo tempo que a fase durar. Link na bio.\""]],
    legenda:"Por que comprar um carro de luxo se dá para alugar? 😂\n\nO Jaguar elétrico com controle remoto é um dos campeões aqui do clubkids Blumenau. Seu filho dirige, você controla, e quando a fase passar é só devolver.\n\nPara crianças até 25 kg. Chama no WhatsApp para ver a disponibilidade.", tags:"#clubkidsblumenau #blumenau #carroeletrico #presentedenatal"},
-  {dia:15, hora:"10h", tipo:"Arte", tema:"Feriado em casa", item:"3 brincadeiras para o feriado", gravar:null,
-   legenda:"Feriado em casa com as crianças? Separei 3 brincadeiras simples para hoje. Qual você vai testar primeiro? Me conta nos comentários.", tags:"#clubkidsblumenau #blumenau #brincadeiras",
-   obs:"Arte feita pela Ivanise. Você só compartilha nos Stories."},
-  {dia:16, hora:"12h", tipo:"Carrossel", tema:"Novembro Roxo", item:"Novembro Roxo", gravar:null,
-   slides:["Capa: \"novembro roxo\"","O que é o mês de conscientização sobre a prematuridade","Berço co-sleeper: o bebê pertinho","Extratora: apoio na amamentação","\"siga sempre a orientação do pediatra\""],
-   legenda:"Novembro é o mês de conscientização sobre a prematuridade. Para as famílias que vivem essa chegada antes da hora, todo apoio conta. Aqui no clubkids Blumenau temos itens que facilitam os primeiros meses em casa. As orientações de saúde são sempre do pediatra.", tags:"#novembroroxo #prematuridade #clubkidsblumenau"},
+  {dia:15, hora:"10h", tipo:"Reaproveitar", tema:"Feriado em casa", item:"Feriado em casa", gravar:null, pasta:"brinquedos",
+   oque:"Um vídeo de criança brincando com cama elástica, piscina de bolinhas ou playground, da pasta de brinquedos.", tela:"feriado em casa com as crianças?",
+   legenda:"Feriado em casa com as crianças? Um brinquedo novo muda o dia: cama elástica, piscina de bolinhas, playground. Aqui em Blumenau você aluga pelo tempo que quiser. Chama no WhatsApp.", tags:"#clubkidsblumenau #blumenau #brincadeiras"},
+  {dia:16, hora:"12h", tipo:"Reaproveitar", tema:"Novembro Roxo", item:"Novembro Roxo", gravar:null, pasta:"brinquedos",
+   oque:"Um vídeo do berço co-sleeper, do balanço ou da extratora, da pasta de itens.", tela:"novembro roxo",
+   legenda:"Novembro é o mês de conscientização sobre a prematuridade. Para as famílias que vivem essa chegada antes da hora, todo apoio conta. Aqui no clubkids Blumenau temos itens que facilitam os primeiros meses em casa, como o berço co-sleeper e a extratora. As orientações de saúde são sempre do pediatra.", tags:"#novembroroxo #prematuridade #clubkidsblumenau"},
   {dia:18, hora:"19h", tipo:"Reels", tema:"Brinquedo da semana", item:"Here I Grow 5 em 1", gravar:17,
    quem:"Em selfie, mostrando as funções (ou a Clara segura o celular, se puder).",
    tela:"1 brinquedo, 5 jeitos de usar",
@@ -388,16 +385,16 @@ const POSTS = [
    roteiro:[["fala","\"Quer saber o que as mães de Blumenau mais alugam?\""],["fala","\"Primeiro: cadeira para auto. Viagem, visita na casa da vó, ninguém quer comprar uma só para isso.\""],["fala","\"Segundo: a cadeira de balanço Mamaroo.\""],["fala","\"Terceiro: a cama elástica.\""],["fala","\"Quer garantir a sua? Me chama no WhatsApp.\""]],
    legenda:"Os 3 itens mais pedidos do clubkids Blumenau:\n\n1. Cadeira para auto, para viagens e passeios\n2. Cadeira de balanço Mamaroo\n3. Cama elástica\n\nQuer garantir o seu? Me chama no WhatsApp.", tags:"#clubkidsblumenau #blumenau #maternidade #maemblumenau",
    obs:"Antes de gravar, confira com a Ivanise se continuam saindo. Se estiverem todos alugados, fale: \"agora estão todos alugados, me chama que eu te aviso quando voltar\"."},
-  {dia:22, hora:"10h", tipo:"Arte", tema:"Black Friday", item:"Esquenta Black Friday", gravar:null, legenda:BF, tags:false},
-  {dia:23, hora:"12h", tipo:"Carrossel", tema:"Natal", item:"Teste antes do presente de Natal", gravar:null,
-   slides:["Capa: \"antes de comprar o presente de natal, alugue e teste\"","Jaguar","Audi","Moto e lambreta","\"veja se a criança gosta de verdade\""],
-   legenda:"Quantas vezes a criança ganhou um presente caro e brincou só uma semana? Antes de comprar, aluga e testa. Se ela amar, você já sabe. Chama no WhatsApp para ver o que está disponível.", tags:"#clubkidsblumenau #blumenau #presentedenatal"},
+  {dia:22, hora:"10h", tipo:"Reaproveitar", tema:"Black Friday", item:"Esquenta Black Friday", gravar:null, oque:"Material da rede, quando a campanha fechar.", legenda:BF, tags:false},
+  {dia:23, hora:"12h", tipo:"Reaproveitar", tema:"Natal", item:"Teste antes do presente de Natal", gravar:null, pasta:"brinquedos",
+   oque:"Um vídeo de carro elétrico (Jaguar, Audi, moto ou lambreta) da pasta de brinquedos. Se tiver vídeo seu ou de cliente que autorizou, melhor ainda.", tela:"antes de comprar o presente, alugue e teste",
+   legenda:"Quantas vezes a criança ganhou um presente caro e brincou só uma semana? Antes de comprar, aluga e testa: Jaguar, Audi, moto e lambreta. Se ela amar, você já sabe. Chama no WhatsApp para ver o que está disponível.", tags:"#clubkidsblumenau #blumenau #presentedenatal"},
   {dia:25, hora:"19h", tipo:"Reels", tema:"Black Friday", item:"Black Friday", gravar:24, quem:"A Ivanise manda o roteiro quando a campanha fechar.", legenda:BF, tags:false},
-  {dia:27, hora:"10h", tipo:"Arte", tema:"Black Friday", item:"Black Friday", gravar:null, legenda:BF, tags:false},
-  {dia:29, hora:"10h", tipo:"Arte", tema:"Black Friday", item:"Última chamada da Black Friday", gravar:null, legenda:BF, tags:false},
-  {dia:30, hora:"12h", tipo:"Carrossel", tema:"Férias", item:"Férias chegando", gravar:null,
-   slides:["Capa: \"férias chegando. e agora?\"","Cama elástica","Piscina de bolinhas","Playground","\"os mais disputados das férias\""],
-   legenda:"As férias estão chegando e a pergunta é sempre a mesma: como manter as crianças ocupadas em casa? A cama elástica é a mais disputada aqui em Blumenau. Me chama no WhatsApp para garantir a sua.", tags:"#clubkidsblumenau #blumenau #ferias"}
+  {dia:27, hora:"10h", tipo:"Reaproveitar", tema:"Black Friday", item:"Black Friday", gravar:null, oque:"Material da rede, quando a campanha fechar.", legenda:BF, tags:false},
+  {dia:29, hora:"10h", tipo:"Reaproveitar", tema:"Black Friday", item:"Última chamada da Black Friday", gravar:null, oque:"Material da rede, quando a campanha fechar.", legenda:BF, tags:false},
+  {dia:30, hora:"12h", tipo:"Reaproveitar", tema:"Férias", item:"Férias chegando", gravar:null, pasta:"brinquedos",
+   oque:"Um vídeo de cama elástica, piscina de bolinhas ou playground da pasta de brinquedos.", tela:"férias chegando. e agora?",
+   legenda:"As férias estão chegando e a pergunta é sempre a mesma: como manter as crianças ocupadas em casa? Cama elástica, piscina de bolinhas e playground são os mais disputados aqui em Blumenau. Me chama no WhatsApp para garantir o seu.", tags:"#clubkidsblumenau #blumenau #ferias"}
 ];
 POSTS.forEach((p,i) => p.id = "p"+i);
 const postsDoDia = d => POSTS.filter(p => p.dia === d);
@@ -489,11 +486,11 @@ const IND = [["reels","Reels publicados"],["stories","Dias com Stories"],["segui
 
 /* ===== linha editorial ===== */
 const EDITORIAL = [
-  {nome:"Cada fase do bebê", base:"30%", nov:"4 de 18", obj:"Mostrar o item certo para cada idade e girar os itens do Giro (Jumper Joyful, Here I Grow, Tapete Gymini, Ginásio Pianinho).", formato:"Reels com a Ivete e a neta; carrossel.", cta:"Qual a fase do seu? Me chama que eu indico.",
+  {nome:"Cada fase do bebê", base:"30%", nov:"4 de 18", obj:"Mostrar o item certo para cada idade e girar os itens do Giro (Jumper Joyful, Here I Grow, Tapete Gymini, Ginásio Pianinho).", formato:"Reels com a Ivete; vídeo reaproveitado da pasta.", cta:"Qual a fase do seu? Me chama que eu indico.",
    pautas:["Mamaroo e balanços: para que fase serve","O que muda dos 6 aos 12 meses e o que vale alugar","Tapete Gymini: o primeiro brinquedo do bebê","Berço portátil ou co-sleeper: qual escolher"]},
-  {nome:"Viagem e visitas", base:"25%", nov:"1 de 18", obj:"É o que mais sai em Blumenau: cadeira para auto, carrinho, bebê conforto e berço portátil. Forte em dezembro e janeiro.", formato:"Carrossel e Reels com o kit montado.", cta:"Monte o seu kit de viagem pelo WhatsApp.",
+  {nome:"Viagem e visitas", base:"25%", nov:"1 de 18", obj:"É o que mais sai em Blumenau: cadeira para auto, carrinho, bebê conforto e berço portátil. Forte em dezembro e janeiro.", formato:"Reels com o kit montado; vídeo da pasta Viagem.", cta:"Monte o seu kit de viagem pelo WhatsApp.",
    pautas:["Kit viagem de fim de ano","Vai receber visita com criança? Alugue o berço","Praia com bebê: o que levar","Cadeirinha para auto: alugar pelo período da viagem"]},
-  {nome:"Diversão e datas", base:"20%", nov:"4 de 18", obj:"Desejo e pedidos de valor maior: carros elétricos, cama elástica, piscina de bolinhas, playground. Natal e férias.", formato:"Reels com humor (o Jaguar teve 5.881 visualizações); carrossel.", cta:"Chama no WhatsApp para ver a disponibilidade.",
+  {nome:"Diversão e datas", base:"20%", nov:"4 de 18", obj:"Desejo e pedidos de valor maior: carros elétricos, cama elástica, piscina de bolinhas, playground. Natal e férias.", formato:"Reels com humor (o Jaguar teve 5.881 visualizações) e no modelo de Ijuí; vídeo da pasta.", cta:"Chama no WhatsApp para ver a disponibilidade.",
    pautas:["\"Aluguei um Audi\" (parte 3 do Jaguar)","Teste antes do presente de Natal","Férias em casa com cama elástica","Dia de chuva em Blumenau: brincadeiras dentro de casa"]},
   {nome:"Confiança e prova social", base:"15%", nov:"3 de 18", obj:"Tirar o medo de alugar: higienização, entrega, avaliações e clientes reais.", formato:"Bastidor só com as mãos; foto de cliente com autorização; avaliação nos Stories.", cta:"Me chama no direct para tirar dúvidas.",
    pautas:["Cliente real do mês","Os mais pedidos de dezembro","Avaliação da semana","Como funciona a renovação"]},
@@ -543,7 +540,8 @@ const SUB = {
   sobre:["Sobre o clubkids","https://drive.google.com/drive/folders/1Ws-mUJp8qVelx2I5ypN8nmGCteuIGwEV"],
   enxoval:["Como economizar no enxoval","https://drive.google.com/drive/folders/1qqX0JQzxMKM9RHn7euS0uefVo8_Z1GCA"],
   jumperoo:["Jumperoo","https://drive.google.com/drive/folders/1hm6FAIZ654K1IYVIQFqGCFBlXGXbg_tV"],
-  viagem:["Viagem","https://drive.google.com/drive/folders/1utcPONzFoEGlaNdTry2XRmnvyzmsPqeq"]
+  viagem:["Viagem","https://drive.google.com/drive/folders/1utcPONzFoEGlaNdTry2XRmnvyzmsPqeq"],
+  brinquedos:["Fotos e vídeos","https://drive.google.com/drive/folders/1jMOl-jPh-g8eMS0BndIOmAsop1fGgqRy"]
 };
 const SUB_POST = {"Brinquedo da semana":"jumperoo","Quem cuida de Blumenau":"sobre","Higienização":"sobre","Jaguar":"sobre","Mais pedidos":"prova","Black Friday":null};
 function pastaHtml(chave, dica){
@@ -619,7 +617,7 @@ const pad = n => String(n).padStart(2,"0");
 const ddmm = d => d < 1 ? `${pad(31+d)}/10` : `${pad(d)}/11`;
 const hojeReal = new Date();
 const ehHoje = d => hojeReal.getFullYear()===ANO && hojeReal.getMonth()===MES && hojeReal.getDate()===d;
-let aba = ["hoje","crono","plano","guia","reuniao","gestao","materiais","semanal"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "gestao";
+let aba = ["hoje","crono","plano","guia","reuniao","gestao","materiais","semanal"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "hoje";
 let diaSel = (hojeReal.getFullYear()===ANO && hojeReal.getMonth()===MES) ? hojeReal.getDate() : (hojeReal < new Date(ANO,MES,1) ? 0 : 30);
 
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),1800)}
@@ -663,13 +661,14 @@ function caixaCopiar(texto, rotulo, comWa){
 }
 function conteudoPost(p){
   const etq = p.tipo.startsWith("Reels") ? "lar" : "am";
-  const formato = p.tipo.startsWith("Reels") ? "vertical, 20 a 40 s, com você" : p.tipo==="Carrossel" ? "até 5 slides, feito pela Ivanise" : "arte feita pela Ivanise";
+  const formato = p.tipo.startsWith("Reels") ? "vertical, 20 a 40 s, com você" : "vídeo ou foto pronta, sem arte: a Ivanise escolhe, coloca o texto e agenda";
   return `<div class="post">
     <div class="post-topo"><span class="etiqueta ${etq}">${esc(p.tipo)}</span><span class="etiqueta az">${esc(ED_DE[p.tema]||p.tema)}</span><span class="etiqueta">${esc(p.tema)}</span></div>
     <h3>${esc(p.item)}</h3>
     <dl class="ficha"><dt>sai</dt><dd>${dataLonga(p.dia)}, ${p.hora} (a Ivanise agenda)</dd><dt>grava</dt><dd>${p.gravar ? dataLonga(p.gravar) : "não precisa: vem pronto"}</dd><dt>formato</dt><dd>${formato}</dd>${p.quem?`<dt>quem</dt><dd>${esc(p.quem)}</dd>`:""}</dl>
     ${p.tela ? caixaCopiar(p.tela, "texto na tela no primeiro segundo") : ""}
     ${p.roteiro ? `<div><small class="info">roteiro (pode falar com as suas palavras)</small><ol class="roteiro">${p.roteiro.map(([k,t]) => `<li class="${k}">${esc(t)}</li>`).join("")}</ol></div>` : ""}
+    ${p.oque ? `<div class="copiar"><p><b>o que usar:</b> ${esc(p.oque)}</p>${p.pasta && SUB[p.pasta] ? `<a class="btn contorno" style="text-align:center;text-decoration:none;display:grid;place-items:center;margin-top:8px" href="${SUB[p.pasta][1]}" target="_blank" rel="noopener">abrir a pasta ${esc(SUB[p.pasta][0])}</a>` : ""}<p class="info" style="margin-top:8px">Se o vídeo for de outra unidade, não diga que é de Blumenau. Tem vídeo seu do mesmo tema? Mande para a Ivanise: vídeo seu sempre vale mais.</p></div>` : ""}
     ${p.slides ? `<div><small class="info">slides, na ordem</small><ol class="slides">${p.slides.map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>` : ""}
     ${caixaCopiar(legendaCompleta(p), p.tags===false ? "legenda" : "legenda com hashtags")}
     ${p.obs ? `<p class="info">${esc(p.obs)}</p>` : ""}
@@ -773,7 +772,7 @@ function viewCrono(){
     const temNao = tarefasDoDia(d).some(x => st(x.id)==="nao");
     const cls = (f===t?"cheio":f>0?"meio":"") + (ehHoje(d)?" hoje":"");
     const ps = postsDoDia(d);
-    const marca = temNao ? "⚠" : postsGravar(d).length ? "gravar" : ps.length ? ps.map(p => p.tipo.startsWith("Reels")?"reels":p.tipo==="Carrossel"?"carr":"arte").join("+") : "";
+    const marca = temNao ? "⚠" : postsGravar(d).length ? "gravar" : ps.length ? ps.map(p => p.tipo.startsWith("Reels")?"reels":"pasta").join("+") : "";
     cel += `<button type="button" class="${cls}" data-dia="${d}" aria-label="${d} de novembro, ${f} de ${t} feitas">${d}<small>${f}/${t}</small>${marca?`<small>${marca}</small>`:""}</button>`;
   }
   const pend = pendencias();
@@ -797,7 +796,7 @@ function viewCrono(){
       <div class="legenda"><span><i style="background:var(--verde);border-color:var(--verde)"></i>dia completo</span><span><i style="border-color:var(--laranja)"></i>começado</span><span>⚠ = tem não concluído</span><span>gravar = dia de gravar</span></div>
       <p class="info">Toque no dia para ver as tarefas. Todo dia também tem 3 Stories.</p></section>
     <h2 style="margin:8px 0 0;font-size:22px;font-weight:800">todos os posts</h2>
-    <p class="info" style="margin:0">São 18 posts: 6 Reels com você e 12 carrosséis e artes que a Ivanise prepara e agenda. Black Friday fica em aberto até a rede definir.</p>
+    <p class="info" style="margin:0">São 18 posts: 7 Reels gravados por você e 11 vídeos ou fotos reaproveitados (pasta da rede ou fotos suas), que a Ivanise escolhe e agenda. Nenhuma arte. Black Friday fica em aberto até a rede definir.</p>
     ${lista}`;
 }
 
@@ -826,18 +825,18 @@ function viewPlano(){
         <tr><td><b>Todo dia</b></td><td>3 Stories (manhã presença, tarde conversa, noite pedido), Status do WhatsApp e responder todo mundo. (15 min)</td></tr>
         <tr><td><b>Terça e quinta</b></td><td>Gravar o vídeo do dia seguinte (em selfie ou com a Clara) e mandar para a Ivanise como documento. (15 min)</td></tr>
         <tr><td><b>Quarta e sexta, 19h</b></td><td>Sai o Reels. Conferir e compartilhar nos Stories.</td></tr>
-        <tr><td><b>Segunda e domingo</b></td><td>Sai carrossel ou arte que a Ivanise preparou. Compartilhar nos Stories.</td></tr>
+        <tr><td><b>Segunda e domingo</b></td><td>Sai o vídeo reaproveitado que a Ivanise agendou. Compartilhar nos Stories.</td></tr>
         <tr><td><b>Segunda</b></td><td>Renovações da semana no WhatsApp.</td></tr>
         <tr><td><b>Terça</b></td><td>Programa de indicação para 5 clientes.</td></tr>
         <tr><td><b>Quinta</b></td><td>Reativação: 15 clientes que não voltaram, uma a uma.</td></tr>
         <tr><td><b>8º ao 10º dia do plano</b></td><td>Pós-venda: está tudo em ordem? Se sim, link do Google e pedido de foto. Se não, resolver ou trocar. NPS no final do plano.</td></tr>
         <tr><td><b>Semana apertada</b></td><td>Mínimo: 1 Story por dia e responder no mesmo dia.</td></tr></tbody></table></section>
     <section class="cartao"><h2>o que a Ivanise faz</h2><ul style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px">
-      <li>Cronograma, legendas, carrosséis, artes e edição dos seus vídeos.</li>
+      <li>Cronograma, legendas, escolha dos vídeos da pasta e edição dos seus vídeos. Sem artes.</li>
       <li>Agenda tudo no Meta Business Suite.</li><li>Posts e ajustes do Google e respostas às avaliações.</li>
       <li>Lembrete da semana e leitura dos números toda segunda.</li></ul></section>
     <section class="cartao"><h2>o que vai ao ar</h2><ul style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px">
-      <li><b>4 posts por semana:</b> 2 Reels com você (quarta e sexta) + carrossel na segunda + arte ou carrossel no domingo.</li>
+      <li><b>4 posts por semana:</b> 2 Reels com você (quarta e sexta) + vídeo reaproveitado na segunda e no domingo.</li>
       <li><b>Black Friday:</b> em aberto até a rede definir.</li></ul>
       <button type="button" class="btn contorno largo" data-aba="crono">ver o cronograma com roteiros</button></section>
     ${editorialHtml()}
